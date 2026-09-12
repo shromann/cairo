@@ -43,6 +43,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from sqlalchemy.sql import text as sqlalchemy_text
 
 __all__ = [
     "Base",
@@ -52,6 +53,7 @@ __all__ = [
     "VideoPrediction",
     "StudyPrediction",
     "Report",
+    "VideoLabel",
     "StudyStatus",
     "VideoStatus",
     "Sex",
@@ -237,7 +239,9 @@ class Video(Base):
     video_num: Mapped[int] = mapped_column(Integer, nullable=False)
     gcs_uri: Mapped[str] = mapped_column(Text, nullable=False)
     view: Mapped[str | None] = mapped_column(Text, nullable=True)
-    doppler: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    doppler: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default=sqlalchemy_text("false")
+    )
     frame_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     status: Mapped[str] = mapped_column(
         Text, nullable=False, default=VideoStatus.PENDING, server_default="pending"
@@ -291,7 +295,9 @@ class VideoPrediction(Base):
     task_name: Mapped[str] = mapped_column(Text, nullable=False)
     task_type: Mapped[str] = mapped_column(Text, nullable=False)
     value: Mapped[float | None] = mapped_column(Double(precision=53), nullable=True)
-    class_probs: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
+    class_probs: Mapped[dict[str, Any] | None] = mapped_column(
+        JSONB(none_as_null=True), nullable=True
+    )
 
     # Relationships
     video: Mapped[Video] = relationship("Video", back_populates="predictions")
@@ -337,7 +343,9 @@ class StudyPrediction(Base):
     task_name: Mapped[str] = mapped_column(Text, nullable=False)
     task_type: Mapped[str] = mapped_column(Text, nullable=False)
     value: Mapped[float | None] = mapped_column(Double(precision=53), nullable=True)
-    class_probs: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
+    class_probs: Mapped[dict[str, Any] | None] = mapped_column(
+        JSONB(none_as_null=True), nullable=True
+    )
     n_videos: Mapped[int] = mapped_column(Integer, nullable=False)
 
     # Relationships
@@ -387,3 +395,40 @@ class Report(Base):
 
     def __repr__(self) -> str:
         return f"<Report study_id={self.study_id} gcs_uri={self.gcs_uri!r}>"
+
+
+# ---------------------------------------------------------------------------
+# video_labels  (evaluation only — not part of the production pipeline)
+# ---------------------------------------------------------------------------
+
+class VideoLabel(Base):
+    """
+    Ground-truth value for a video from a public dataset (e.g. EchoNet-Dynamic EF),
+    keyed by PanEcho task name so it joins directly onto ``video_predictions``.
+
+    Production videos have no labels; this table only exists so model output can be
+    scored locally.  See ``cairo.backend.ingest`` and ``cairo.backend.metrics``.
+    """
+
+    __tablename__ = "video_labels"
+    __table_args__ = (
+        UniqueConstraint("video_id", "task_name", name="uq_videolabel_video_task"),
+        Index("ix_video_labels_video_id", "video_id"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        server_default=func.gen_random_uuid(),
+    )
+    video_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("videos.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    task_name: Mapped[str] = mapped_column(Text, nullable=False)
+    value: Mapped[float] = mapped_column(Double(precision=53), nullable=False)
+    source: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    def __repr__(self) -> str:
+        return f"<VideoLabel video_id={self.video_id} task={self.task_name!r} value={self.value}>"
