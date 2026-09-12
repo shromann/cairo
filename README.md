@@ -1,0 +1,5 @@
+# cairo
+## Installation
+```
+uv sync
+```
