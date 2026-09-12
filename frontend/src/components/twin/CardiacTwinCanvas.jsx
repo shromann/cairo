@@ -4,9 +4,11 @@ import { OrbitControls, PerspectiveCamera, Center } from "@react-three/drei";
 import * as THREE from "three";
 import { HeartMesh } from "./HeartMesh";
 import { HeartMeshGLB } from "./HeartMeshGLB";
+import { DebugProbe } from "./DebugProbe";
 
 // Kill switch for the mesh migration: "glb" loads public/models/heart.glb, anything else keeps the procedural heart.
 const USE_GLB = import.meta.env.PUBLIC_HEART_RENDERER === "glb";
+const HeartWrapper = USE_GLB ? ({ children }) => <group>{children}</group> : ({ children }) => <Center top position={[0, 0, 0]}>{children}</Center>;
 import { AHA17Heatmap } from "./AHA17Heatmap";
 import { ValveLeaflets } from "./ValveLeaflets";
 import { UltrasoundSlicePlane, getClippingPlanesForMode } from "./UltrasoundSlicePlane";
@@ -47,6 +49,7 @@ export function CardiacTwinCanvas({
         }}
         shadows
       >
+        <DebugProbe />
         <PerspectiveCamera makeDefault position={[0, 0.5, 6.0]} fov={45} />
         <OrbitControls
           enableDamping
@@ -94,7 +97,10 @@ export function CardiacTwinCanvas({
         {/* 5. Central Internal Fill Point Light */}
         <pointLight position={[0, 0.5, 0]} intensity={0.4} color="#ff99aa" distance={4} />
 
-        <Center top position={[0, 0, 0]}>
+        {/* The procedural heart relies on drei <Center> to auto-centre its primitives. The GLB is centred at build
+            time (manifest frame), and <Center> would measure an empty group while the GLB is still loading
+            (-> position -Infinity), so GLB mode uses a plain group. */}
+        <HeartWrapper>
           {/* 1. Heart anatomy mesh with node click: procedural (default) or Z-Anatomy GLB (PUBLIC_HEART_RENDERER=glb) */}
           {USE_GLB ? (
             <Suspense fallback={null}>
@@ -104,6 +110,7 @@ export function CardiacTwinCanvas({
                 clippingPlanes={clippingPlanes}
                 highlightSegment={highlightSegment}
                 selectedNodeId={selectedNodeId}
+                showValves={showValves}
                 onSelectNode={onSelectNode}
               />
             </Suspense>
@@ -127,8 +134,8 @@ export function CardiacTwinCanvas({
             onSelectSegment={onSelectSegment}
           />
 
-          {/* 3. Synchronized Fibrous Mitral & Aortic Valves */}
-          {showValves && (
+          {/* 3. Synchronized Fibrous Mitral & Aortic Valves (procedural overlay; the GLB has its own leaflets) */}
+          {showValves && !USE_GLB && (
             <ValveLeaflets
               kinematics={kinematics}
               clippingPlanes={clippingPlanes}
@@ -150,7 +157,7 @@ export function CardiacTwinCanvas({
             visible={showSlicePlane && viewMode !== "none"}
             opacity={0.18}
           />
-        </Center>
+        </HeartWrapper>
 
         {/* Studio Ground Grid Floor */}
         <gridHelper
