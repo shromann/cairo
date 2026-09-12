@@ -47,13 +47,13 @@ export function CardiacTwinCanvas({
         }}
         shadows
       >
-        <PerspectiveCamera makeDefault position={[0, 0.7, 5.2]} fov={45} />
+        <PerspectiveCamera makeDefault position={[0, 0.5, 6.0]} fov={45} />
         <OrbitControls
           enableDamping
           dampingFactor={0.06}
           minDistance={2.2}
           maxDistance={9.5}
-          target={[0, 0.2, 0]}
+          target={[0, -0.3, 0]}
         />
 
         {/* --- DIFFUSE MEDICAL STUDIO LIGHTING --- */}

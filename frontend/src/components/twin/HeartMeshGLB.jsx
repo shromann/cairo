@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import * as THREE from "three";
 import { CARDIAC_NODES } from "../../data/cardiacNodes";
 import { useHeartModel, groupMeshesByChamber } from "../../lib/heartAsset";
+import { HEART_ROOT_POSITION, HEART_ROOT_ROTATION } from "../../lib/heartFrame";
 
 /**
  * Stage 1 of the mesh migration: the Z-Anatomy heart.glb rendered STATIC in place of the procedural
@@ -88,7 +89,7 @@ export function HeartMeshGLB({
   const handleOut = () => { document.body.style.cursor = "auto"; };
 
   return (
-    <group position={[0, -0.2, 0]} rotation={[0.15, -0.25, 0.08]} name="heart-glb-root">
+    <group position={HEART_ROOT_POSITION} rotation={HEART_ROOT_ROTATION} name="heart-glb-root">
       {chambers.map(({ id, meshes, info, family }) => {
         const node = resolveNode(id);
         const selected = node && selectedNodeId === node.id;

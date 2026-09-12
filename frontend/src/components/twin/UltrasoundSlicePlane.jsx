@@ -1,5 +1,51 @@
 import React, { useMemo } from "react";
 import * as THREE from "three";
+import { useHeartManifest } from "../../lib/heartAsset";
+import { DEFAULT_FRAME, localPointToScene, localDirToScene } from "../../lib/heartFrame";
+
+const SECTOR_DEPTH = 5.6;
+const SECTOR_HALF_ANGLE = (42 * Math.PI) / 180; // 84 deg field of view
+const V = (a) => new THREE.Vector3(a[0], a[1], a[2]);
+
+/**
+ * Probe placement per view, in heart-local space, from the manifest frame.
+ * Returns { origin, beam, normal }: transducer position, beam direction (sector centre line) and the
+ * fan-plane normal. Sector geometry is authored with its apex at the origin beaming +Y in the XY plane.
+ *
+ *  A4C / A2C  apical window: probe just below the LV apex, beaming up the long axis toward the base.
+ *             A4C plane contains the long axis and the RV; A2C is rotated ~60 deg about the long axis.
+ *  PLAX       parasternal window: probe anterior + superior, beam toward the LV centre, fan plane
+ *             contains the long axis (aortic root + mitral valve are in that plane).
+ *  PSAX       same window as PLAX, fan rotated 90 deg about the beam -> short-axis ring.
+ */
+export function getProbePlacement(viewMode, frame = DEFAULT_FRAME) {
+  const c = V(frame.lvCentre);
+  const up = V(frame.lvAxis).multiplyScalar(-1).normalize();            // apex->base (manifest axis points to the apex)
+  const half = (frame.lvLength || 3.2) / 2;
+  const rv = V(frame.rvInsertionDir); rv.addScaledVector(up, -rv.dot(up)).normalize();   // RV direction, perpendicular to long axis
+  const ant = V(frame.anteriorDir || DEFAULT_FRAME.anteriorDir); ant.addScaledVector(up, -ant.dot(up)).normalize();
+
+  if (viewMode === "A4C" || viewMode === "A2C") {
+    const origin = c.clone().addScaledVector(up, -(half + 0.55));      // just below the apex
+    let lateral = rv.clone();
+    if (viewMode === "A2C") {
+      // rotate ~60 deg about the long axis, choosing the direction that swings toward the anterior wall
+      const plus = rv.clone().applyAxisAngle(up, Math.PI / 3), minus = rv.clone().applyAxisAngle(up, -Math.PI / 3);
+      lateral = plus.dot(ant) >= minus.dot(ant) ? plus : minus;
+    }
+    return { origin, beam: up.clone(), normal: new THREE.Vector3().crossVectors(up, lateral).normalize() };
+  }
+  if (viewMode === "PLAX" || viewMode === "PSAX") {
+    const R = frame.heartRadius || 2.3;
+    const origin = c.clone().addScaledVector(ant, R * 1.25).addScaledVector(up, half * 0.55);   // anterior + toward the base
+    const beam = c.clone().addScaledVector(up, 0.2).sub(origin).normalize();                     // aim at the LV
+    const longAxisNormal = new THREE.Vector3().crossVectors(up, beam).normalize();               // plane containing long axis + beam
+    if (viewMode === "PLAX") return { origin, beam, normal: longAxisNormal };
+    const shortAxisNormal = new THREE.Vector3().crossVectors(beam, longAxisNormal).normalize();  // rotated 90 deg about the beam
+    return { origin, beam, normal: shortAxisNormal };
+  }
+  return null;
+}
 
 /**
  * Interactive Ultrasound Slicing Plane & Beam Sector
@@ -40,9 +86,9 @@ export function UltrasoundSlicePlane({
     const indices = [];
 
     const numSegments = 32;
-    const apex = new THREE.Vector3(0, -3.2, 0); // Transducer probe placed at apex
-    const depth = 5.6;
-    const halfAngle = (42 * Math.PI) / 180; // 84 deg field of view
+    const apex = new THREE.Vector3(0, 0, 0); // transducer at the group origin; the group is placed per view
+    const depth = SECTOR_DEPTH;
+    const halfAngle = SECTOR_HALF_ANGLE;
 
     // Apex vertex (index 0)
     vertices.push(apex.x, apex.y, apex.z);
@@ -74,8 +120,8 @@ export function UltrasoundSlicePlane({
   // 3. Grid line arcs and ray markers
   const gridLines = useMemo(() => {
     const points = [];
-    const apex = new THREE.Vector3(0, -3.2, 0);
-    const halfAngle = (42 * Math.PI) / 180;
+    const apex = new THREE.Vector3(0, 0, 0);
+    const halfAngle = SECTOR_HALF_ANGLE;
 
     // Depth arcs at r = 2.0, 3.5, 5.0
     [2.2, 3.8, 5.4].forEach((r) => {
@@ -96,30 +142,27 @@ export function UltrasoundSlicePlane({
     return points;
   }, []);
 
-  if (viewMode === "none" || !visible) {
+  // 4. Place the probe from the manifest frame (LV centroid, principal axis, RV + anterior directions),
+  //    transformed through the heart root transform so it sits in the same space as the heart meshes.
+  const manifest = useHeartManifest();
+  const placement = useMemo(() => {
+    const frame = manifest?.frame ? { ...DEFAULT_FRAME, ...manifest.frame } : DEFAULT_FRAME;
+    const p = getProbePlacement(viewMode, frame);
+    if (!p) return null;
+    const origin = localPointToScene(p.origin.toArray());
+    const beam = localDirToScene(p.beam.toArray());
+    const normal = localDirToScene(p.normal.toArray());
+    const x = new THREE.Vector3().crossVectors(beam, normal).normalize();   // local +X, +Y=beam, +Z=fan normal
+    const q = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, beam, normal));
+    return { position: origin, quaternion: q };
+  }, [viewMode, manifest]);
+
+  if (viewMode === "none" || !visible || !placement) {
     return null;
   }
 
-  // Transform rotation of the scan sector based on viewMode
-  let rotation = [0, 0, 0];
-  let position = [0, 0, 0];
-
-  if (viewMode === "A4C") {
-    rotation = [0, 0, 0];
-    position = [0, 0, 0.1];
-  } else if (viewMode === "A2C") {
-    rotation = [0, Math.PI / 2, 0];
-    position = [0.15, 0, 0];
-  } else if (viewMode === "PLAX") {
-    rotation = [0, Math.PI / 4, 0];
-    position = [0.1, 0, 0.1];
-  } else if (viewMode === "PSAX") {
-    rotation = [Math.PI / 2, 0, 0];
-    position = [0, -0.1, 0];
-  }
-
   return (
-    <group position={position} rotation={rotation}>
+    <group position={placement.position} quaternion={placement.quaternion}>
       {/* 1. Semi-transparent Ultrasound Scan Beam Fan */}
       <mesh geometry={sectorGeometry}>
         <meshBasicMaterial
@@ -157,8 +200,8 @@ export function UltrasoundSlicePlane({
         );
       })}
 
-      {/* 4. Transducer Probe Apex Marker */}
-      <mesh position={[0, -3.2, 0]}>
+      {/* 4. Transducer Probe Apex Marker (at the sector apex) */}
+      <mesh position={[0, -0.2, 0]}>
         <cylinderGeometry args={[0.22, 0.35, 0.45, 16]} />
         <meshStandardMaterial
           color="#00f0ff"
