@@ -10,3 +10,29 @@ wheels/
 .venv
 
 uv.lock
+
+# =============================================================================
+# Cairo — secrets and local environment
+# =============================================================================
+
+# GCP environment — contains billing account, project IDs, and generated secrets
+env.sh
+
+# Any downloaded GCP service account key files (should never be needed — we
+# use Workload Identity / self-impersonation, but guard against accidents)
+*.json.key
+*-service-account.json
+*-keyfile.json
+
+# Local .env files for development
+.env
+.env.*
+!.env.example
+
+# Terraform state (if added later)
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# macOS
+.DS_Store
