@@ -52,7 +52,9 @@ const VALVE_IDS = new Set(["mitral_valve", "tricuspid_valve", "aortic_valve", "p
 // ---------------------------------------------------------------------------------------------
 const DEFORM_PARENT = {
   lv: "lv", rv: "rv", la: "la", ra: "ra",
-  mitral_valve: "lv", aortic_valve: "lv", tricuspid_valve: "rv", pulmonary_valve: "rv",
+  mitral_valve: "lv", tricuspid_valve: "rv",
+  // semilunar valves sit at the ventriculo-arterial junction: keep them with the static vessel stubs
+  aortic_valve: "static", pulmonary_valve: "static",
   lad: "lv", lcx: "lv", left_main: "lv", gcv: "lv", rca: "rv", rca_marginal: "rv",
 };
 function deformParentOf(chamberId, nodeName) {
@@ -69,9 +71,12 @@ uniform mat3 uFrame;      // columns: principal axis e1 (long), e2, e3 (radial)
 uniform vec3 uScale;      // scale along e1, e2, e3
 uniform float uTwist;     // torsion (rad) at one half-length along e1, linear in the axial coordinate
 uniform float uHalfLen;   // half extent along e1
+uniform float uPivotX;    // frame-space e1 coordinate of the longitudinal scaling origin (apex end for
+                          // ventricles, superior/venous end for atria); radial scaling is about the axis
 vec3 cairoDeform(vec3 p) {
   vec3 q = transpose(uFrame) * (p - uCentroid);
-  q *= uScale;
+  q.x = uPivotX + (q.x - uPivotX) * uScale.x;
+  q.yz *= uScale.yz;
   float ang = uTwist * clamp(q.x / max(uHalfLen, 1e-4), -1.0, 1.0);
   float c = cos(ang), s = sin(ang);
   q = vec3(q.x, c * q.y - s * q.z, s * q.y + c * q.z);
@@ -98,6 +103,7 @@ function makeUniforms() {
   return {
     uCentroid: { value: new THREE.Vector3() }, uFrame: { value: new THREE.Matrix3() },
     uScale: { value: new THREE.Vector3(1, 1, 1) }, uTwist: { value: 0 }, uHalfLen: { value: 1 },
+    uPivotX: { value: 0 },
   };
 }
 /** Orthonormal frame from the manifest axis; e1 = axis, e2/e3 any perpendicular pair. */
@@ -153,6 +159,12 @@ export function HeartMeshGLB({
       u.uCentroid.value.set(...info.centroid);
       u.uFrame.value.copy(frameFromAxis(info.axis));
       u.uHalfLen.value = halfLengthAlong(info, info.axis);
+      // Longitudinal scaling origin, as a coordinate along e1 (= info.axis) from the centroid:
+      //   ventricles: the apex end (the end of the axis pointing to -Y) -> apex fixed, base descends (MAPSE)
+      //   atria:      the superior end (the end pointing to +Y, venous inflow) -> they expand down to the AV plane
+      const axisDown = info.axis[1] < 0;               // does +e1 point toward -Y?
+      const wantDownEnd = id === "lv" || id === "rv";
+      u.uPivotX.value = (axisDown === wantDownEnd ? 1 : -1) * u.uHalfLen.value;
       out[id] = u;
     }
     return out;
