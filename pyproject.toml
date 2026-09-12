@@ -19,8 +19,9 @@ dependencies = [
 
     # --- Database ---
     "sqlalchemy>=2.0.31",
-    "asyncpg>=0.29.0",          # async PostgreSQL driver
     "alembic>=1.13.2",          # schema migrations
+    "pg8000>=1.31.2",           # pure-Python PostgreSQL driver (used by Cloud SQL connector)
+    "cloud-sql-python-connector[pg8000]>=1.11.0",  # IAM-authenticated socket to Cloud SQL
 
     # --- GCP clients ---
     "google-cloud-storage>=2.17.0",
