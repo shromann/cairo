@@ -250,6 +250,12 @@ export function CardiacTwinDashboard() {
                       <span className="node-clinical-text">{selectedNode.clinicalNotes}</span>
                     </div>
                   )}
+                  {selectedNode.modelNote && (
+                    <div className="node-stat-row">
+                      <span className="node-stat-label">Model note:</span>
+                      <span className="node-stat-val">{selectedNode.modelNote}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

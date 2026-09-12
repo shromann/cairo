@@ -1,8 +1,12 @@
-import React, { useMemo } from "react";
+import React, { Suspense, useMemo } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Center } from "@react-three/drei";
 import * as THREE from "three";
 import { HeartMesh } from "./HeartMesh";
+import { HeartMeshGLB } from "./HeartMeshGLB";
+
+// Kill switch for the mesh migration: "glb" loads public/models/heart.glb, anything else keeps the procedural heart.
+const USE_GLB = import.meta.env.PUBLIC_HEART_RENDERER === "glb";
 import { AHA17Heatmap } from "./AHA17Heatmap";
 import { ValveLeaflets } from "./ValveLeaflets";
 import { UltrasoundSlicePlane, getClippingPlanesForMode } from "./UltrasoundSlicePlane";
@@ -91,15 +95,28 @@ export function CardiacTwinCanvas({
         <pointLight position={[0, 0.5, 0]} intensity={0.4} color="#ff99aa" distance={4} />
 
         <Center top position={[0, 0, 0]}>
-          {/* 1. Photorealistic Deformable Heart Anatomy Mesh with Node Click */}
-          <HeartMesh
-            kinematics={kinematics}
-            displayMode={displayMode}
-            clippingPlanes={clippingPlanes}
-            highlightSegment={highlightSegment}
-            selectedNodeId={selectedNodeId}
-            onSelectNode={onSelectNode}
-          />
+          {/* 1. Heart anatomy mesh with node click: procedural (default) or Z-Anatomy GLB (PUBLIC_HEART_RENDERER=glb) */}
+          {USE_GLB ? (
+            <Suspense fallback={null}>
+              <HeartMeshGLB
+                kinematics={kinematics}
+                displayMode={displayMode}
+                clippingPlanes={clippingPlanes}
+                highlightSegment={highlightSegment}
+                selectedNodeId={selectedNodeId}
+                onSelectNode={onSelectNode}
+              />
+            </Suspense>
+          ) : (
+            <HeartMesh
+              kinematics={kinematics}
+              displayMode={displayMode}
+              clippingPlanes={clippingPlanes}
+              highlightSegment={highlightSegment}
+              selectedNodeId={selectedNodeId}
+              onSelectNode={onSelectNode}
+            />
+          )}
 
           {/* 2. AHA 17-Segment Regional Strain Heatmap Overlay */}
           <AHA17Heatmap

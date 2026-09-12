@@ -236,7 +236,40 @@ export const CARDIAC_NODES = {
     description:
       "Bicuspid valve composed of Anterior and Posterior leaflets supported by a fibrous annulus, chordae tendineae, and papillary muscles.",
     clinicalNotes:
-      "Opens in diastole (E-wave and A-wave) and seals tight during systole to prevent regurgitation into the left atrium."
+      "Opens in diastole (E-wave and A-wave) and seals tight during systole to prevent regurgitation into the left atrium.",
+    modelNote:
+      "Z-Anatomy source model contains only the posterior leaflet; the anterior leaflet is not present in the GLB."
+  },
+  tricuspid_valve: {
+    id: "tricuspid_valve",
+    name: "Tricuspid Valve",
+    category: "Atrioventricular Valve",
+    role: "RV Inflow Control",
+    description:
+      "Three-leaflet valve (Anterior, Septal, and Inferior/Posterior leaflets) between the right atrium and right ventricle, supported by chordae tendineae and the RV papillary muscles.",
+    clinicalNotes:
+      "Functional tricuspid regurgitation is graded on Doppler; the TR jet velocity is used to estimate RV systolic pressure (RVSP)."
+  },
+  pulmonary_valve: {
+    id: "pulmonary_valve",
+    name: "Pulmonary Valve (Semilunar)",
+    category: "Semilunar Outflow Valve",
+    role: "RV Outflow Gating",
+    pressure: "25 / 10 mmHg (Pulmonary Artery)",
+    description:
+      "Three semilunar cusps (Anterior, Left, and Right) at the junction of the RV infundibulum and the pulmonary trunk.",
+    clinicalNotes:
+      "Best seen in the parasternal short-axis and RV outflow views; stenosis is graded by peak velocity across the valve."
+  },
+  left_main: {
+    id: "left_main",
+    name: "Left Main Coronary Artery",
+    category: "Coronary Circulation",
+    role: "Left Coronary Trunk",
+    description:
+      "Short trunk arising from the left aortic sinus that bifurcates into the Left Anterior Descending (LAD) and Left Circumflex (LCx) arteries.",
+    clinicalNotes:
+      "Supplies the majority of the left ventricular myocardium; significant left main stenosis is a surgical indication."
   },
   aortic_valve: {
     id: "aortic_valve",
