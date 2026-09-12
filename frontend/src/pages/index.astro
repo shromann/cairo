@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { CardiacTwinDashboard } from '../components/CardiacTwinDashboard.jsx';
+import '../styles/global.css';
+---
+
+<Layout title="CAIRO | 3D Cardiac Digital Twin & PanEcho AI Engine">
+  <main>
+    <CardiacTwinDashboard client:only="react" />
+  </main>
+</Layout>
