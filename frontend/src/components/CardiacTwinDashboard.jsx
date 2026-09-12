@@ -258,6 +258,10 @@ export function CardiacTwinDashboard() {
             <div className="canvas-interaction-help">
               <span>Click any heart chamber, vessel, or valve to inspect name &amp; function • Drag to Orbit</span>
             </div>
+            <div className="canvas-attribution">
+              Heart model: <a href="https://github.com/LluisV/Z-Anatomy-Sample" target="_blank" rel="noreferrer">Z-Anatomy</a> CardioVascular,{" "}
+              <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>
+            </div>
           </div>
 
           {/* Cardiac Timeline Controller */}

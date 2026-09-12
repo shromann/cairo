@@ -40,3 +40,7 @@ env.sh
 frontend/node_modules/
 frontend/.astro/
 frontend/dist/
+
+# heart asset pipeline (source repo + intermediates are rebuilt by npm run build:heart)
+tools/heart-asset/.cache/
+tools/heart-asset/node_modules/

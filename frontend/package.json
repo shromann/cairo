@@ -6,7 +6,8 @@
     "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev --port 4321 --host",
     "start": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
     "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
-    "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview"
+    "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
+    "build:heart": "npm --prefix ../tools/heart-asset install --no-audit --no-fund && npm --prefix ../tools/heart-asset run build"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.1",

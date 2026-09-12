@@ -1472,3 +1472,7 @@ html, body {
 .text-crimson { color: var(--accent-danger); }
 .text-emerald { color: var(--accent-1); }
 .text-lavender { color: var(--accent-2); }
+
+/* Z-Anatomy attribution (CC BY-SA) */
+.canvas-attribution { position: absolute; right: 12px; bottom: 10px; font-size: 10px; color: #71717a; letter-spacing: 0.02em; pointer-events: auto; }
+.canvas-attribution a { color: #a1a1aa; text-decoration: underline; }
