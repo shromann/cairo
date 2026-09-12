@@ -14,7 +14,7 @@ import { CardiacControls } from "./controls/CardiacControls";
 import { StudySelector } from "./controls/StudySelector";
 import { DisplayModeControls } from "./controls/DisplayModeControls";
 
-import { Heart, Activity, Sparkles, Sliders, FileText, Play, Layers } from "lucide-react";
+import { Heart, Activity, Sparkles, Sliders, FileText, Play, Layers, X, Info } from "lucide-react";
 
 /**
  * Main Interactive Cardiac Digital Twin Dashboard
@@ -48,6 +48,7 @@ export function CardiacTwinDashboard() {
   const [showValves, setShowValves] = useState(true);
   const [showSimpsonTracings, setShowSimpsonTracings] = useState(false);
   const [highlightSegment, setHighlightSegment] = useState(null);
+  const [selectedNode, setSelectedNode] = useState(null);
 
   // 4. Sidebar Active Tab
   const [activeTab, setActiveTab] = useState("clinical"); // "clinical" | "telemetry" | "video"
@@ -114,17 +115,21 @@ export function CardiacTwinDashboard() {
     setHighlightSegment(seg.id === highlightSegment ? null : seg.id);
   }, [highlightSegment]);
 
+  const handleSelectNode = useCallback((node) => {
+    setSelectedNode((prev) => (prev?.id === node?.id ? null : node));
+  }, []);
+
   return (
     <div className="cardiac-twin-root">
-      {/* Top Brand Header */}
+      {/* Top Brand Header (Instatic Studio Chrome) */}
       <header className="cardiac-header">
         <div className="brand-group">
           <div className="heart-logo-wrap">
-            <Heart size={20} className="pulse-heart" />
+            <Heart size={16} className="pulse-heart text-crimson" />
           </div>
-          <div>
-            <h1 className="brand-title">CAIRO : CARDIAC DIGITAL TWIN</h1>
-            <p className="brand-sub">Biomechanical Kinematics & PanEcho Multitask AI Synchronizer</p>
+          <div className="brand-text-block">
+            <h1 className="brand-title">CAIRO</h1>
+            <span className="brand-sub">Cardiac Digital Twin &amp; PanEcho Engine</span>
           </div>
         </div>
 
@@ -134,12 +139,13 @@ export function CardiacTwinDashboard() {
             onSelectStudy={(study) => {
               setCurrentStudy(study);
               setHighlightSegment(null);
+              setSelectedNode(null);
             }}
           />
 
           <div className="model-tag-badge">
-            <Sparkles size={14} className="text-cyan" />
-            <span>Yale PanEcho + EchoNet Dynamic</span>
+            <Sparkles size={13} className="accent-icon" />
+            <span>Yale PanEcho 39-Task AI</span>
           </div>
         </div>
       </header>
@@ -163,7 +169,9 @@ export function CardiacTwinDashboard() {
               showSimpsonTracings={showSimpsonTracings}
               showSlicePlane={true}
               highlightSegment={highlightSegment}
+              selectedNodeId={selectedNode?.id}
               onSelectSegment={handleSelectSegment}
+              onSelectNode={handleSelectNode}
             />
 
             {/* Viewport Floating Info Overlays */}
@@ -184,9 +192,43 @@ export function CardiacTwinDashboard() {
               )}
             </div>
 
+            {/* Interactive Anatomical Node Inspector Card */}
+            {selectedNode && (
+              <div className="node-inspector-modal">
+                <div className="node-inspector-header">
+                  <div className="node-title-group">
+                    <span className="node-category-tag">{selectedNode.category}</span>
+                    <h3 className="node-name">{selectedNode.name}</h3>
+                  </div>
+                  <button
+                    className="node-close-btn"
+                    onClick={() => setSelectedNode(null)}
+                    title="Close Inspector"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+                <div className="node-inspector-body">
+                  <p className="node-desc">{selectedNode.description}</p>
+                  {selectedNode.pressure && (
+                    <div className="node-stat-row">
+                      <span className="node-stat-label">Normal Pressure:</span>
+                      <span className="node-stat-val">{selectedNode.pressure}</span>
+                    </div>
+                  )}
+                  {selectedNode.clinicalNotes && (
+                    <div className="node-clinical-box">
+                      <span className="node-clinical-title">Clinical Role:</span>
+                      <span className="node-clinical-text">{selectedNode.clinicalNotes}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Quick Viewport Help */}
             <div className="canvas-interaction-help">
-              <span>Left-click + Drag to Orbit • Right-click to Pan • Scroll to Zoom</span>
+              <span>Click any heart chamber, vessel, or valve to inspect name &amp; function • Drag to Orbit</span>
             </div>
           </div>
 

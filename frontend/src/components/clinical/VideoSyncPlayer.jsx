@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from "react";
-import { Film, Play, Pause, Bookmark } from "lucide-react";
+import { Film, Bookmark } from "lucide-react";
 
 /**
- * Synchronized 2D Echocardiogram Video Player
+ * Synchronized 2D Echocardiogram Video Player (Instatic Style)
  * Frame-locked with the 3D Cardiac Digital Twin.
  */
 export function VideoSyncPlayer({
@@ -34,11 +34,11 @@ export function VideoSyncPlayer({
     <div className="video-sync-card">
       <div className="video-sync-header">
         <div className="video-title-wrap">
-          <Film size={15} className="text-cyan" />
-          <span className="video-title">EchoNet-Dynamic Ingestion Clip</span>
+          <Film size={14} className="text-muted" />
+          <span className="video-title">EchoNet Clip</span>
         </div>
         <span className="video-frame-badge">
-          Frame {currentFrame} / {totalFrames} ({fps} FPS)
+          Frame {currentFrame}/{totalFrames} ({fps} FPS)
         </span>
       </div>
 
@@ -54,14 +54,14 @@ export function VideoSyncPlayer({
           />
         ) : (
           <div className="no-video-placeholder">
-            <span>Synthetic Video Mode (Parameters Loaded)</span>
+            <span>Synthetic Video Mode</span>
           </div>
         )}
 
         {/* Ultrasound Scan Fan Overlay */}
         <div className="echo-video-overlay-grid">
-          <div className="transducer-tag">A4C View • 2.5 MHz</div>
-          <div className="depth-tag">16 cm</div>
+          <div>A4C • 2.5 MHz</div>
+          <div>16 cm</div>
         </div>
       </div>
 
@@ -72,7 +72,7 @@ export function VideoSyncPlayer({
           onClick={() => onSeekPhase(112 / totalFrames)}
           title="Jump to End-Diastolic Frame"
         >
-          <Bookmark size={13} className="text-cyan" />
+          <Bookmark size={12} className="text-emerald" />
           <span>ED Frame 112</span>
         </button>
 
@@ -81,7 +81,7 @@ export function VideoSyncPlayer({
           onClick={() => onSeekPhase(134 / totalFrames)}
           title="Jump to End-Systolic Frame"
         >
-          <Bookmark size={13} className="text-crimson" />
+          <Bookmark size={12} className="text-crimson" />
           <span>ES Frame 134</span>
         </button>
       </div>

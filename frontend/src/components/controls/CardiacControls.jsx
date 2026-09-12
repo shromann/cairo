@@ -2,7 +2,7 @@ import React from "react";
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Gauge } from "lucide-react";
 
 /**
- * Cardiac Cycle Time & Kinematics Controller HUD
+ * Cardiac Cycle Time & Kinematics Controller HUD (Instatic Studio Transport Bar)
  */
 export function CardiacControls({
   currentPhase = 0,
@@ -22,7 +22,7 @@ export function CardiacControls({
       {/* 1. Main Scrubber Timeline */}
       <div className="scrubber-row">
         <div className="phase-readout">
-          <span className="phase-label">Cardiac Phase</span>
+          <span className="phase-label">Phase</span>
           <span className="phase-value">{phasePercent}%</span>
         </div>
 
@@ -34,6 +34,7 @@ export function CardiacControls({
           value={currentPhase}
           onChange={(e) => onSeekPhase(parseFloat(e.target.value))}
           className="cardiac-slider"
+          aria-label="Cardiac phase scrubber"
         />
 
         <div className="phase-quick-jumps">
@@ -41,7 +42,7 @@ export function CardiacControls({
             className={`phase-jump-btn ${currentPhase < 0.08 ? "active" : ""}`}
             onClick={() => onSeekPhase(0.0)}
           >
-            ED (0%)
+            ED 0%
           </button>
           <button
             className={`phase-jump-btn ${currentPhase >= 0.08 && currentPhase < 0.38 ? "active" : ""}`}
@@ -53,7 +54,7 @@ export function CardiacControls({
             className={`phase-jump-btn ${currentPhase >= 0.38 && currentPhase < 0.46 ? "active" : ""}`}
             onClick={() => onSeekPhase(0.38)}
           >
-            ES (38%)
+            ES 38%
           </button>
           <button
             className={`phase-jump-btn ${currentPhase >= 0.46 && currentPhase < 0.75 ? "active" : ""}`}
@@ -77,39 +78,43 @@ export function CardiacControls({
             className="ctrl-btn"
             onClick={() => onStepPhase(-0.02)}
             title="Step Back 2%"
+            aria-label="Step Back"
           >
-            <ChevronLeft size={16} />
+            <ChevronLeft size={14} />
           </button>
 
           <button
             className={`ctrl-btn play-btn ${isPlaying ? "playing" : ""}`}
             onClick={onTogglePlay}
             title={isPlaying ? "Pause" : "Play"}
+            aria-label={isPlaying ? "Pause" : "Play"}
           >
-            {isPlaying ? <Pause size={18} /> : <Play size={18} fill="currentColor" />}
+            {isPlaying ? <Pause size={15} /> : <Play size={15} fill="currentColor" />}
           </button>
 
           <button
             className="ctrl-btn"
             onClick={() => onStepPhase(0.02)}
             title="Step Forward 2%"
+            aria-label="Step Forward"
           >
-            <ChevronRight size={16} />
+            <ChevronRight size={14} />
           </button>
 
           <button
             className="ctrl-btn"
             onClick={() => onSeekPhase(0)}
             title="Reset to 0%"
+            aria-label="Reset phase"
           >
-            <RotateCcw size={15} />
+            <RotateCcw size={13} />
           </button>
         </div>
 
         {/* BPM Selector */}
         <div className="bpm-control-group">
-          <Gauge size={15} className="text-cyan" />
-          <span className="bpm-label">Rate:</span>
+          <Gauge size={13} className="text-muted" />
+          <span className="bpm-label">Heart Rate:</span>
           <select
             value={bpm}
             onChange={(e) => onChangeBpm(parseInt(e.target.value))}
@@ -117,7 +122,7 @@ export function CardiacControls({
           >
             <option value={50}>50 BPM</option>
             <option value={60}>60 BPM</option>
-            <option value={70}>70 BPM (Standard)</option>
+            <option value={70}>70 BPM (Normal)</option>
             <option value={80}>80 BPM</option>
             <option value={100}>100 BPM (Tachy)</option>
             <option value={120}>120 BPM</option>

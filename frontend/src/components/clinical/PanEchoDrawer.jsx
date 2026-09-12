@@ -1,14 +1,13 @@
 import React, { useState, useMemo } from "react";
 import { PANECHO_TASK_METADATA, PANECHO_CATEGORIES } from "../../data/panEchoData";
-import { Search, Filter, CheckCircle2, AlertTriangle, AlertCircle, Info, Stethoscope } from "lucide-react";
+import { Search, CheckCircle2, AlertTriangle, AlertCircle, Stethoscope } from "lucide-react";
 
 /**
  * Yale CarDS PanEcho 39-Task Clinical Diagnostic Report Drawer
+ * Instatic Inspector Panel Style
  */
 export function PanEchoDrawer({
-  studyResults = {},
-  isOpen = true,
-  onClose = () => {}
+  studyResults = {}
 }) {
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,24 +31,25 @@ export function PanEchoDrawer({
       <div className="panecho-header">
         <div className="panecho-title-row">
           <div className="panecho-logo-wrap">
-            <Stethoscope size={18} className="text-cyan" />
-            <span className="panecho-title">PanEcho Foundation Model Report</span>
+            <Stethoscope size={15} className="text-muted" />
+            <span className="panecho-title">PanEcho Report</span>
           </div>
-          <span className="panecho-badge">39 Multi-Task AI</span>
+          <span className="panecho-badge">39 Tasks</span>
         </div>
         <p className="panecho-subtitle">
-          Yale CarDS Lab • View-Agnostic Deep Learning Model (JAMA 2025)
+          Yale CarDS • View-Agnostic Foundation Model (JAMA 2025)
         </p>
 
         {/* Search & Category Filter */}
         <div className="panecho-search-bar">
-          <Search size={14} className="search-icon" />
+          <Search size={13} className="search-icon" />
           <input
             type="text"
-            placeholder="Search clinical tasks (e.g. EF, Regurgitation, Effusion)..."
+            placeholder="Filter tasks (e.g. EF, Regurgitation, Effusion)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="panecho-search-input"
+            aria-label="Filter clinical tasks"
           />
         </div>
 
@@ -58,7 +58,7 @@ export function PanEchoDrawer({
             className={`category-tab ${selectedCategory === "ALL" ? "active" : ""}`}
             onClick={() => setSelectedCategory("ALL")}
           >
-            All Tasks (39)
+            All (39)
           </button>
           {Object.values(PANECHO_CATEGORIES).map((cat) => (
             <button
@@ -118,7 +118,7 @@ export function PanEchoDrawer({
                     <span className="task-unit">{task.unit}</span>
                     {pred && (
                       <span className={`task-status-tag ${statusClass}`}>
-                        <Icon size={12} />
+                        <Icon size={11} />
                         {pred.status}
                       </span>
                     )}
@@ -130,24 +130,24 @@ export function PanEchoDrawer({
                     </span>
                     {pred && (
                       <span className={`task-status-tag ${statusClass}`}>
-                        <Icon size={12} />
+                        <Icon size={11} />
                         {pred.status || pred.label}
                       </span>
                     )}
                   </div>
                 )}
 
-                {/* Normal reference or probability */}
+                {/* Normal reference or confidence */}
                 <div className="task-footer-info">
                   {isRegression ? (
-                    <span className="task-ref">Normal Ref: {task.normalRange}</span>
+                    <span className="task-ref">Ref: {task.normalRange}</span>
                   ) : (
                     <span className="task-ref">
-                      Confidence: {pred ? `${(pred.probability * 100).toFixed(0)}%` : "95%"}
+                      Prob: {pred ? `${(pred.probability * 100).toFixed(0)}%` : "95%"}
                     </span>
                   )}
                   {pred && pred.confidence && (
-                    <span className="task-conf">Model Conf: {(pred.confidence * 100).toFixed(0)}%</span>
+                    <span className="task-conf">Conf: {(pred.confidence * 100).toFixed(0)}%</span>
                   )}
                 </div>
               </div>

@@ -1,9 +1,9 @@
 import React from "react";
 import heartData from "../../data/heartData.json";
-import { FolderHeart, Check } from "lucide-react";
+import { FolderHeart } from "lucide-react";
 
 /**
- * Study Selector for switching between clinical patient profiles from FileList.csv
+ * Study Selector for switching between clinical patient profiles
  */
 export function StudySelector({
   selectedStudyId = "0X2D1CE5FC57B6FBC1",
@@ -14,8 +14,8 @@ export function StudySelector({
   return (
     <div className="study-selector-container">
       <div className="study-selector-label-row">
-        <FolderHeart size={15} className="text-cyan" />
-        <span className="study-selector-title">Active Clinical Study</span>
+        <FolderHeart size={14} className="text-muted" />
+        <span className="study-selector-title">Study:</span>
       </div>
 
       <select

@@ -1,8 +1,8 @@
 import React from "react";
-import { Activity, Heart, Droplets, Zap, ShieldAlert, Waves } from "lucide-react";
+import { Activity, Heart, Droplets, Zap } from "lucide-react";
 
 /**
- * Diagnostic Vital Metric Badges HUD
+ * Diagnostic Vital Metric Badges HUD (Instatic Widget Style)
  */
 export function MetricBadges({ studyParams = {}, kinematics = {} }) {
   const ef = studyParams.ef ?? 55.0;
@@ -20,17 +20,17 @@ export function MetricBadges({ studyParams = {}, kinematics = {} }) {
   let efStatus = "Preserved Function";
   let efClass = "status-normal";
   if (ef < 30) {
-    efStatus = "Severe Dysfunction (HFrEF)";
+    efStatus = "Severe HFrEF";
     efClass = "status-severe";
   } else if (ef < 40) {
     efStatus = "Moderate Dysfunction";
     efClass = "status-warning";
   } else if (ef < 50) {
     efStatus = "Mild Impairment (HFmrEF)";
-    efClass = "status-mild";
+    efClass = "status-warning";
   } else if (ef > 70) {
-    efStatus = "Hyperdynamic State";
-    efClass = "status-hyper";
+    efStatus = "Hyperdynamic";
+    efClass = "status-cyan";
   }
 
   return (
@@ -38,8 +38,8 @@ export function MetricBadges({ studyParams = {}, kinematics = {} }) {
       {/* 1. Ejection Fraction */}
       <div className={`metric-card ${efClass}`}>
         <div className="metric-header">
-          <span className="metric-label">LVEF (Ejection Fraction)</span>
-          <Activity className="metric-icon" size={16} />
+          <span className="metric-label">LVEF Ejection Fraction</span>
+          <Activity className="metric-icon" size={14} />
         </div>
         <div className="metric-value-row">
           <span className="metric-value">{ef.toFixed(1)}</span>
@@ -53,8 +53,8 @@ export function MetricBadges({ studyParams = {}, kinematics = {} }) {
       {/* 2. Global Longitudinal Strain (GLS) */}
       <div className="metric-card status-cyan">
         <div className="metric-header">
-          <span className="metric-label">PanEcho GLS (Strain)</span>
-          <Zap className="metric-icon" size={16} />
+          <span className="metric-label">PanEcho GLS Strain</span>
+          <Zap className="metric-icon" size={14} />
         </div>
         <div className="metric-value-row">
           <span className="metric-value">{gls.toFixed(1)}</span>
@@ -68,8 +68,8 @@ export function MetricBadges({ studyParams = {}, kinematics = {} }) {
       {/* 3. Instantaneous Volume V(t) */}
       <div className="metric-card status-gold">
         <div className="metric-header">
-          <span className="metric-label">Instantaneous Cavity $V(t)$</span>
-          <Droplets className="metric-icon" size={16} />
+          <span className="metric-label">Instantaneous Cavity V(t)</span>
+          <Droplets className="metric-icon" size={14} />
         </div>
         <div className="metric-value-row">
           <span className="metric-value">{currentVol}</span>
@@ -83,8 +83,8 @@ export function MetricBadges({ studyParams = {}, kinematics = {} }) {
       {/* 4. Stroke Volume & Output */}
       <div className="metric-card status-purple">
         <div className="metric-header">
-          <span className="metric-label">Stroke Volume / CO</span>
-          <Heart className="metric-icon" size={16} />
+          <span className="metric-label">Stroke Volume &amp; CO</span>
+          <Heart className="metric-icon" size={14} />
         </div>
         <div className="metric-value-row">
           <span className="metric-value">{strokeVolume.toFixed(0)}</span>

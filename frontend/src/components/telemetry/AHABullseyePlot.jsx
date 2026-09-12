@@ -2,7 +2,7 @@ import React from "react";
 import { getStrainColor } from "../../data/kinematics";
 
 /**
- * 2D AHA 17-Segment Polar Bullseye Strain Diagram
+ * 2D AHA 17-Segment Polar Bullseye Strain Diagram (Instatic Style)
  */
 export function AHABullseyePlot({
   strains = [],
@@ -12,12 +12,12 @@ export function AHABullseyePlot({
   const strainMap = new Map((strains || []).map((s) => [s.segment, s]));
 
   // SVG dimensions
-  const size = 200;
+  const size = 190;
   const center = size / 2;
-  const rApex = 18;
-  const rApical = 42;
-  const rMid = 68;
-  const rBasal = 92;
+  const rApex = 17;
+  const rApical = 40;
+  const rMid = 65;
+  const rBasal = 88;
 
   // Helper to generate SVG polar arc path
   const describeArc = (x, y, innerR, outerR, startAngle, endAngle) => {
@@ -45,8 +45,7 @@ export function AHABullseyePlot({
     ].join(" ");
   };
 
-  // Segment geometries
-  // Basal 1-6 (60 deg each: 1 Ant, 2 AntSep, 3 InfSep, 4 Inf, 5 InfLat, 6 AntLat)
+  // Basal 1-6
   const basalSegs = [
     { seg: 1, start: -30, end: 30 },
     { seg: 2, start: 30, end: 90 },
@@ -56,7 +55,7 @@ export function AHABullseyePlot({
     { seg: 6, start: 270, end: 330 }
   ];
 
-  // Mid 7-12 (60 deg each)
+  // Mid 7-12
   const midSegs = [
     { seg: 7, start: -30, end: 30 },
     { seg: 8, start: 30, end: 90 },
@@ -66,7 +65,7 @@ export function AHABullseyePlot({
     { seg: 12, start: 270, end: 330 }
   ];
 
-  // Apical 13-16 (90 deg each: 13 Ant, 14 Septal, 15 Inf, 16 Lat)
+  // Apical 13-16
   const apicalSegs = [
     { seg: 13, start: -45, end: 45 },
     { seg: 14, start: 45, end: 135 },
@@ -89,16 +88,17 @@ export function AHABullseyePlot({
         <path
           d={pathD}
           fill={color}
-          stroke={isSelected ? "#ffffff" : "rgba(10, 14, 26, 0.9)"}
-          strokeWidth={isSelected ? 2.5 : 1.2}
-          opacity={isSelected ? 1.0 : 0.88}
+          stroke={isSelected ? "#ffffff" : "#121214"}
+          strokeWidth={isSelected ? 2.2 : 1.0}
+          opacity={isSelected ? 1.0 : 0.9}
         />
         <text
           x={labelX}
           y={labelY}
-          fill="#0a0e1a"
-          fontSize="9"
-          fontWeight="bold"
+          fill="#09090b"
+          fontSize="8.5"
+          fontFamily="JetBrains Mono, monospace"
+          fontWeight="700"
           textAnchor="middle"
           dominantBaseline="central"
           pointerEvents="none"
@@ -113,7 +113,7 @@ export function AHABullseyePlot({
     <div className="bullseye-container">
       <div className="bullseye-header">
         <span className="telemetry-title">AHA 17-Segment Polar Bullseye</span>
-        <span className="telemetry-badge">Peak Systolic Strain</span>
+        <span className="telemetry-badge">Strain</span>
       </div>
 
       <div className="bullseye-svg-wrap">
@@ -161,16 +161,17 @@ export function AHABullseyePlot({
                   cy={center}
                   r={rApex}
                   fill={apexColor}
-                  stroke={isSelected ? "#ffffff" : "rgba(10, 14, 26, 0.9)"}
-                  strokeWidth={isSelected ? 2.5 : 1.2}
-                  opacity={isSelected ? 1.0 : 0.88}
+                  stroke={isSelected ? "#ffffff" : "#121214"}
+                  strokeWidth={isSelected ? 2.2 : 1.0}
+                  opacity={isSelected ? 1.0 : 0.9}
                 />
                 <text
                   x={center}
                   y={center}
-                  fill="#0a0e1a"
-                  fontSize="9"
-                  fontWeight="bold"
+                  fill="#09090b"
+                  fontSize="8.5"
+                  fontFamily="JetBrains Mono, monospace"
+                  fontWeight="700"
                   textAnchor="middle"
                   dominantBaseline="central"
                   pointerEvents="none"
@@ -184,10 +185,9 @@ export function AHABullseyePlot({
 
         {/* Legend */}
         <div className="bullseye-legend">
-          <div className="legend-item"><span className="legend-dot dot-cyan"></span> &lt; -19% (Normal)</div>
-          <div className="legend-item"><span className="legend-dot dot-green"></span> -16% to -19%</div>
-          <div className="legend-item"><span className="legend-dot dot-amber"></span> -12% to -16% (Mild)</div>
-          <div className="legend-item"><span className="legend-dot dot-red"></span> &gt; -10% (Akinetic)</div>
+          <div className="legend-item"><span className="legend-dot dot-green"></span> &lt; -18% (Normal)</div>
+          <div className="legend-item"><span className="legend-dot dot-amber"></span> -12% to -17% (Mild)</div>
+          <div className="legend-item"><span className="legend-dot dot-red"></span> &gt; -11% (Akinetic)</div>
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import { SimpsonTracingsOverlay } from "./SimpsonTracingsOverlay";
 
 /**
  * React Three Fiber 3D Canvas Viewport for the Cardiac Digital Twin
+ * High-End Cinematic Medical Studio Viewport
  */
 export function CardiacTwinCanvas({
   kinematics,
@@ -21,7 +22,9 @@ export function CardiacTwinCanvas({
   showSimpsonTracings = false,
   showSlicePlane = true,
   highlightSegment = null,
-  onSelectSegment = () => {}
+  selectedNodeId = null,
+  onSelectSegment = () => {},
+  onSelectNode = () => {}
 }) {
   // Compute hardware clipping planes for current ultrasound viewMode
   const clippingPlanes = useMemo(() => {
@@ -36,42 +39,66 @@ export function CardiacTwinCanvas({
           alpha: true,
           localClippingEnabled: true, // Crucial for Three.js clipping planes
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.15
+          toneMappingExposure: 1.05
         }}
         shadows
       >
-        <PerspectiveCamera makeDefault position={[0, 0.8, 5.4]} fov={45} />
+        <PerspectiveCamera makeDefault position={[0, 0.7, 5.2]} fov={45} />
         <OrbitControls
           enableDamping
           dampingFactor={0.06}
-          minDistance={2.5}
-          maxDistance={9.0}
+          minDistance={2.2}
+          maxDistance={9.5}
           target={[0, 0.2, 0]}
         />
 
-        {/* --- STUDIO MEDICAL LIGHTING --- */}
+        {/* --- DIFFUSE MEDICAL STUDIO LIGHTING --- */}
+        {/* Soft base ambient light for deep shadows */}
         <ambientLight intensity={0.8} />
-        {/* Main Key Light */}
+
+        {/* 1. Primary Key Light (Upper Right, warm diffuse white) */}
         <directionalLight
           position={[5, 8, 5]}
-          intensity={1.8}
+          intensity={1.3}
           castShadow
-          shadow-mapSize-width={1024}
-          shadow-mapSize-height={1024}
+          shadow-bias={-0.0001}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
         />
-        {/* Cool Rim Backlight */}
-        <directionalLight position={[-6, 4, -5]} intensity={1.2} color="#00f0ff" />
-        {/* Warm Fill Light */}
-        <directionalLight position={[0, -5, 3]} intensity={0.6} color="#ff4d6d" />
-        <pointLight position={[0, 0, 0]} intensity={0.4} color="#ffffff" />
+
+        {/* 2. Subsurface Scattering Transillumination Back-Light */}
+        <directionalLight
+          position={[0, 1.5, -5.0]}
+          intensity={1.6}
+          color="#ff4d5a"
+        />
+
+        {/* 3. Soft Rim Light */}
+        <directionalLight
+          position={[-5, 3, -3]}
+          intensity={0.65}
+          color="#9bdcff"
+        />
+
+        {/* 4. Soft Fill Light (Anterior inferior) */}
+        <directionalLight
+          position={[0, -4, 4]}
+          intensity={0.45}
+          color="#ffd6ba"
+        />
+
+        {/* 5. Central Internal Fill Point Light */}
+        <pointLight position={[0, 0.5, 0]} intensity={0.4} color="#ff99aa" distance={4} />
 
         <Center top position={[0, 0, 0]}>
-          {/* 1. Parametric Deformable Heart Anatomy Mesh */}
+          {/* 1. Photorealistic Deformable Heart Anatomy Mesh with Node Click */}
           <HeartMesh
             kinematics={kinematics}
             displayMode={displayMode}
             clippingPlanes={clippingPlanes}
             highlightSegment={highlightSegment}
+            selectedNodeId={selectedNodeId}
+            onSelectNode={onSelectNode}
           />
 
           {/* 2. AHA 17-Segment Regional Strain Heatmap Overlay */}
@@ -83,11 +110,13 @@ export function CardiacTwinCanvas({
             onSelectSegment={onSelectSegment}
           />
 
-          {/* 3. Synchronized Mitral & Aortic Valves */}
+          {/* 3. Synchronized Fibrous Mitral & Aortic Valves */}
           {showValves && (
             <ValveLeaflets
               kinematics={kinematics}
               clippingPlanes={clippingPlanes}
+              selectedNodeId={selectedNodeId}
+              onSelectNode={onSelectNode}
             />
           )}
 
@@ -102,13 +131,13 @@ export function CardiacTwinCanvas({
           <UltrasoundSlicePlane
             viewMode={viewMode}
             visible={showSlicePlane && viewMode !== "none"}
-            opacity={0.2}
+            opacity={0.18}
           />
         </Center>
 
-        {/* Subtle Grid Floor */}
+        {/* Studio Ground Grid Floor */}
         <gridHelper
-          args={[14, 28, "#00f0ff", "#1c2538"]}
+          args={[14, 28, "#27272a", "#121214"]}
           position={[0, -2.4, 0]}
         />
       </Canvas>

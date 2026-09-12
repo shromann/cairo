@@ -1,8 +1,8 @@
 import React from "react";
-import { Eye, Layers, Scissors, Flame, Activity } from "lucide-react";
+import { Layers, Scissors } from "lucide-react";
 
 /**
- * Display Mode, Ultrasound Slicing Planes & Shader Controls
+ * Display Mode, Ultrasound Slicing Planes & Shader Controls (Instatic Segmented Controls)
  */
 export function DisplayModeControls({
   displayMode = "solid",
@@ -20,13 +20,13 @@ export function DisplayModeControls({
     <div className="display-controls-card">
       <div className="display-group">
         <span className="ctrl-group-label">
-          <Layers size={13} /> 3D Material
+          <Layers size={12} /> Material
         </span>
         <div className="button-toggle-row">
           {[
             { id: "solid", label: "PBR Solid" },
-            { id: "xray", label: "X-Ray Glass" },
-            { id: "wireframe", label: "Mesh Wire" },
+            { id: "xray", label: "X-Ray" },
+            { id: "wireframe", label: "Wireframe" },
             { id: "heatmap", label: "Strain Heatmap" }
           ].map((mode) => (
             <button
@@ -42,15 +42,15 @@ export function DisplayModeControls({
 
       <div className="display-group">
         <span className="ctrl-group-label">
-          <Scissors size={13} /> Ultrasound Cutting Plane
+          <Scissors size={12} /> Ultrasound Plane
         </span>
         <div className="button-toggle-row">
           {[
-            { id: "none", label: "Off (3D)" },
-            { id: "A4C", label: "A4C (4-Chamber)" },
-            { id: "A2C", label: "A2C (2-Chamber)" },
-            { id: "PLAX", label: "PLAX (Long-Axis)" },
-            { id: "PSAX", label: "PSAX (Short-Axis)" }
+            { id: "none", label: "3D View" },
+            { id: "A4C", label: "A4C" },
+            { id: "A2C", label: "A2C" },
+            { id: "PLAX", label: "PLAX" },
+            { id: "PSAX", label: "PSAX" }
           ].map((plane) => (
             <button
               key={plane.id}
@@ -70,7 +70,7 @@ export function DisplayModeControls({
             checked={showValves}
             onChange={onToggleValves}
           />
-          <span>Mitral/Aortic Valves</span>
+          <span>Valves</span>
         </label>
 
         <label className="checkbox-label">
@@ -79,7 +79,7 @@ export function DisplayModeControls({
             checked={showSimpsonTracings}
             onChange={onToggleSimpson}
           />
-          <span>Simpson 20-Disc Tracings</span>
+          <span>Simpson 20-Discs</span>
         </label>
 
         <label className="checkbox-label">
@@ -88,7 +88,7 @@ export function DisplayModeControls({
             checked={showHeatmap}
             onChange={onToggleHeatmap}
           />
-          <span>AHA 17 Strain Overlay</span>
+          <span>AHA 17 Overlay</span>
         </label>
       </div>
     </div>

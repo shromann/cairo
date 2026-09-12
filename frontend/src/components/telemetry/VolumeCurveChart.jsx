@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 
 /**
- * Real-Time Canvas Volume-Time V(t) & Pressure-Time P(t) Telemetry Chart
+ * Real-Time Canvas Volume-Time V(t) Telemetry Chart (Instatic Palette)
  */
 export function VolumeCurveChart({
   telemetryData = [],
@@ -28,15 +28,15 @@ export function VolumeCurveChart({
     ctx.clearRect(0, 0, width, height);
 
     // Layout
-    const padding = { top: 20, right: 40, bottom: 25, left: 45 };
+    const padding = { top: 20, right: 30, bottom: 22, left: 40 };
     const chartW = width - padding.left - padding.right;
     const chartH = height - padding.top - padding.bottom;
 
     const maxVol = Math.max(160, (studyParams.edv || 120) * 1.15);
     const minVol = 0;
 
-    // Draw Background Grid
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
+    // Draw Background Grid Lines
+    ctx.strokeStyle = "#27272a";
     ctx.lineWidth = 1;
 
     // Horizontal grid lines
@@ -49,26 +49,26 @@ export function VolumeCurveChart({
       ctx.lineTo(padding.left + chartW, y);
       ctx.stroke();
 
-      ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
-      ctx.font = "10px Inter, sans-serif";
+      ctx.fillStyle = "#71717a";
+      ctx.font = "10px JetBrains Mono, monospace";
       ctx.textAlign = "right";
-      ctx.fillText(`${Math.round(yVal)}`, padding.left - 8, y + 3);
+      ctx.fillText(`${Math.round(yVal)}`, padding.left - 6, y + 3);
     }
 
     // Phase markers (Systole / Diastole divider at t = 0.38)
     const systoleEndX = padding.left + 0.38 * chartW;
-    ctx.fillStyle = "rgba(255, 45, 85, 0.08)";
+    ctx.fillStyle = "rgba(248, 113, 113, 0.05)";
     ctx.fillRect(padding.left, padding.top, 0.38 * chartW, chartH);
 
-    ctx.fillStyle = "rgba(0, 240, 255, 0.04)";
+    ctx.fillStyle = "rgba(155, 220, 255, 0.03)";
     ctx.fillRect(systoleEndX, padding.top, 0.62 * chartW, chartH);
 
-    ctx.fillStyle = "rgba(255, 45, 85, 0.6)";
+    ctx.fillStyle = "#f87171";
     ctx.font = "9px Inter, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("SYSTOLE", padding.left + 0.19 * chartW, padding.top - 6);
 
-    ctx.fillStyle = "rgba(0, 240, 255, 0.6)";
+    ctx.fillStyle = "#9bdcff";
     ctx.fillText("DIASTOLE", padding.left + 0.69 * chartW, padding.top - 6);
 
     // Draw V(t) Volume Curve
@@ -82,11 +82,11 @@ export function VolumeCurveChart({
 
     // Gradient fill under volume curve
     const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
-    gradient.addColorStop(0, "rgba(0, 240, 255, 0.3)");
-    gradient.addColorStop(1, "rgba(0, 240, 255, 0.0)");
+    gradient.addColorStop(0, "rgba(155, 220, 255, 0.25)");
+    gradient.addColorStop(1, "rgba(155, 220, 255, 0.0)");
 
-    ctx.strokeStyle = "#00f0ff";
-    ctx.lineWidth = 2.2;
+    ctx.strokeStyle = "#9bdcff";
+    ctx.lineWidth = 2.0;
     ctx.stroke();
 
     ctx.lineTo(padding.left + chartW, padding.top + chartH);
@@ -96,12 +96,12 @@ export function VolumeCurveChart({
 
     // Draw Current Phase Vertical Cursor
     const cursorX = padding.left + currentPhase * chartW;
-    ctx.strokeStyle = "#ffea00";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.5;
     ctx.setLineDash([4, 2]);
     ctx.beginPath();
-    ctx.moveTo(cursorX, padding.top - 8);
-    ctx.lineTo(cursorX, padding.top + chartH + 8);
+    ctx.moveTo(cursorX, padding.top - 6);
+    ctx.lineTo(cursorX, padding.top + chartH + 6);
     ctx.stroke();
     ctx.setLineDash([]);
 
@@ -109,29 +109,30 @@ export function VolumeCurveChart({
     const currentPt = telemetryData.find((p) => Math.abs(p.t - currentPhase) < 0.015) || telemetryData[0];
     if (currentPt) {
       const dotY = padding.top + chartH - ((currentPt.volume - minVol) / (maxVol - minVol)) * chartH;
-      ctx.fillStyle = "#ffea00";
+      ctx.fillStyle = "#ffffff";
       ctx.beginPath();
-      ctx.arc(cursorX, dotY, 4.5, 0, Math.PI * 2);
+      ctx.arc(cursorX, dotY, 4.0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "#ffffff";
+      ctx.strokeStyle = "#09090b";
       ctx.lineWidth = 1.5;
       ctx.stroke();
     }
 
     // Units label
-    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+    ctx.fillStyle = "#a1a1aa";
     ctx.font = "9px Inter, sans-serif";
     ctx.textAlign = "left";
     ctx.fillText("LV Vol (mL)", padding.left, padding.top - 6);
 
     ctx.textAlign = "right";
-    ctx.fillText("Phase: 0% → 100%", padding.left + chartW, padding.top + chartH + 16);
+    ctx.font = "9px JetBrains Mono, monospace";
+    ctx.fillText("0% → 100%", padding.left + chartW, padding.top + chartH + 16);
   }, [telemetryData, currentPhase, studyParams]);
 
   return (
     <div className="telemetry-chart-card">
       <div className="telemetry-chart-header">
-        <span className="telemetry-title">Continuous Left Ventricle Volume Curve $V(t)$</span>
+        <span className="telemetry-title">Continuous Left Ventricle Volume V(t)</span>
         <span className="telemetry-badge">Kinematic Telemetry</span>
       </div>
       <canvas ref={canvasRef} style={{ width: "100%", display: "block" }} />
