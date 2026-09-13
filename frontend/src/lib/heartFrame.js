@@ -7,7 +7,7 @@
  */
 import * as THREE from "three";
 
-export const HEART_ROOT_POSITION = [0, -0.2, 0];
+export const HEART_ROOT_POSITION = [-0.12, -0.55, -0.2];
 export const HEART_ROOT_ROTATION = [0.15, -0.25, 0.08];
 
 const _m = new THREE.Matrix4();

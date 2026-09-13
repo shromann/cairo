@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import * as THREE from "three";
 import { getStrainColor } from "../../data/kinematics";
+import { HEART_ROOT_POSITION, HEART_ROOT_ROTATION } from "../../lib/heartFrame";
 
 /**
  * AHA 17-Segment 3D Myocardial Strain Heatmap Overlay
@@ -123,7 +124,7 @@ export function AHA17Heatmap({
   }, [strains]);
 
   return (
-    <group position={[0, -0.2, 0]} rotation={[0.15, -0.25, 0.08]}>
+    <group position={HEART_ROOT_POSITION} rotation={HEART_ROOT_ROTATION}>
       {segmentsGeo.map((seg) => {
         const color = getStrainColor(seg.strain);
         const isSelected = highlightSegment === seg.id;

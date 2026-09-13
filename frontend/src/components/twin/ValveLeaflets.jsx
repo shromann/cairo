@@ -2,6 +2,7 @@ import React, { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { CARDIAC_NODES } from "../../data/cardiacNodes";
+import { HEART_ROOT_POSITION, HEART_ROOT_ROTATION } from "../../lib/heartFrame";
 
 /**
  * Dynamic Heart Valve Leaflets (Mitral & Aortic) with Fibrous Chordae Tendineae
@@ -133,7 +134,7 @@ export function ValveLeaflets({
   };
 
   return (
-    <group position={[0, -0.2, 0]} rotation={[0.15, -0.25, 0.08]}>
+    <group position={HEART_ROOT_POSITION} rotation={HEART_ROOT_ROTATION}>
       {/* --- 1. MITRAL VALVE (Atrioventricular Ring at y = 1.25) --- */}
       <group
         position={[-0.3, 1.25, -0.2]}

@@ -3,6 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { getMyocardialTextures } from "./myocardialTextures";
 import { CARDIAC_NODES } from "../../data/cardiacNodes";
+import { HEART_ROOT_POSITION, HEART_ROOT_ROTATION } from "../../lib/heartFrame";
 import {
   buildLeftVentricleGeometries,
   buildRightVentricleGeometry,
@@ -452,7 +453,7 @@ export function HeartMesh({
   }, [clippingPlanes, selectedNodeId]);
 
   return (
-    <group position={[0, -0.2, 0]} rotation={[0.15, -0.25, 0.08]}>
+    <group position={HEART_ROOT_POSITION} rotation={HEART_ROOT_ROTATION}>
       {/* 1. Left Ventricle Epicardium */}
       <mesh
         ref={lvOuterRef}

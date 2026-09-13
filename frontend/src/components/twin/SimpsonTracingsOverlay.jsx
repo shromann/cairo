@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import * as THREE from "three";
 import heartData from "../../data/heartData.json";
+import { HEART_ROOT_POSITION, HEART_ROOT_ROTATION } from "../../lib/heartFrame";
 
 /**
  * 3D Visualization of Simpson's Method 20-Disc Tracings from VolumeTracings.csv
@@ -98,7 +99,7 @@ export function SimpsonTracingsOverlay({
   }, [endDiastole, endSystole, f_contraction]);
 
   return (
-    <group position={[0, -0.2, 0]} rotation={[0.15, -0.25, 0.08]}>
+    <group position={HEART_ROOT_POSITION} rotation={HEART_ROOT_ROTATION}>
       {/* 1. Transverse 20-Disc Contour Rings */}
       {discGeometries.map((disc) => (
         <line key={disc.id} geometry={disc.geometry} position={disc.position}>

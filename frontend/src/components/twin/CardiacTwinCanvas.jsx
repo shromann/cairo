@@ -1,18 +1,72 @@
-import React, { Suspense, useMemo } from "react";
+import React, { Suspense, useMemo, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, PerspectiveCamera, Center } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, useProgress } from "@react-three/drei";
 import * as THREE from "three";
+import { Heart } from "lucide-react";
 import { HeartMesh } from "./HeartMesh";
 import { HeartMeshGLB } from "./HeartMeshGLB";
 import { DebugProbe } from "./DebugProbe";
-
-// Kill switch for the mesh migration: "glb" loads public/models/heart.glb, anything else keeps the procedural heart.
-const USE_GLB = import.meta.env.PUBLIC_HEART_RENDERER === "glb";
-const HeartWrapper = USE_GLB ? ({ children }) => <group>{children}</group> : ({ children }) => <Center top position={[0, 0, 0]}>{children}</Center>;
 import { AHA17Heatmap } from "./AHA17Heatmap";
 import { ValveLeaflets } from "./ValveLeaflets";
 import { UltrasoundSlicePlane, getClippingPlanesForMode } from "./UltrasoundSlicePlane";
 import { SimpsonTracingsOverlay } from "./SimpsonTracingsOverlay";
+
+// Kill switch for the mesh migration: "glb" loads public/models/heart.glb, anything else keeps the procedural heart.
+const USE_GLB = import.meta.env.PUBLIC_HEART_RENDERER === "glb";
+
+/**
+ * High-End Glassmorphic Loading Spinner Overlay for 3D Mesh Assets
+ * Displays during GLB download, Draco buffer decompression, and texture initialization.
+ */
+function ModelLoadingOverlay() {
+  const { active, progress } = useProgress();
+  const [visible, setVisible] = useState(true);
+  const [hasFinished, setHasFinished] = useState(false);
+
+  useEffect(() => {
+    if (!active && (progress >= 100 || progress === 0)) {
+      setHasFinished(true);
+      const timer = setTimeout(() => {
+        setVisible(false);
+      }, 400);
+      return () => clearTimeout(timer);
+    } else if (active) {
+      setVisible(true);
+      setHasFinished(false);
+    }
+  }, [active, progress]);
+
+  if (!visible) return null;
+
+  return (
+    <div className={`model-loading-overlay ${hasFinished ? "model-loading-fade-out" : ""}`}>
+      <div className="model-loading-card">
+        <div className="model-loading-ring-wrap">
+          <div className="model-loading-ring" />
+          <div className="model-loading-ring-inner" />
+          <Heart size={20} className="model-loading-heart" />
+        </div>
+        <div className="model-loading-info">
+          <div className="model-loading-title-row">
+            <span className="model-loading-title">Loading 3D Cardiac Anatomy</span>
+            <span className="model-loading-pct">{Math.round(progress || 0)}%</span>
+          </div>
+          <div className="model-loading-bar-track">
+            <div
+              className="model-loading-bar-fill"
+              style={{ width: `${Math.max(6, Math.min(100, progress || 0))}%` }}
+            />
+          </div>
+          <span className="model-loading-sub">
+            {progress < 100
+              ? "Fetching High-Resolution Biomechanical Mesh & Draco Buffers…"
+              : "Initializing Kinematics & Shaders…"}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /**
  * React Three Fiber 3D Canvas Viewport for the Cardiac Digital Twin
@@ -39,6 +93,9 @@ export function CardiacTwinCanvas({
 
   return (
     <div className="cardiac-canvas-container" style={{ width: "100%", height: "100%", position: "relative" }}>
+      {/* 3D Model Loading Spinner Overlay */}
+      <ModelLoadingOverlay />
+
       <Canvas
         gl={{
           antialias: true,
@@ -50,13 +107,17 @@ export function CardiacTwinCanvas({
         shadows
       >
         <DebugProbe />
-        <PerspectiveCamera makeDefault position={[0, 0.5, 6.0]} fov={45} />
+
+        {/* Reframed Perspective Camera: perfectly centered, comfortable focal length without wide-angle distortion */}
+        <PerspectiveCamera makeDefault position={[0, 0.45, 7.8]} fov={38} />
+
+        {/* OrbitControls pivoting around the true volumetric centroid of the heart */}
         <OrbitControls
           enableDamping
           dampingFactor={0.06}
-          minDistance={2.2}
-          maxDistance={9.5}
-          target={[0, -0.3, 0]}
+          minDistance={3.0}
+          maxDistance={12.0}
+          target={[0, 0.25, 0.3]}
         />
 
         {/* --- DIFFUSE MEDICAL STUDIO LIGHTING --- */}
@@ -95,13 +156,10 @@ export function CardiacTwinCanvas({
         />
 
         {/* 5. Central Internal Fill Point Light */}
-        <pointLight position={[0, 0.5, 0]} intensity={0.4} color="#ff99aa" distance={4} />
+        <pointLight position={[0, 0.25, 0]} intensity={0.4} color="#ff99aa" distance={4} />
 
-        {/* The procedural heart relies on drei <Center> to auto-centre its primitives. The GLB is centred at build
-            time (manifest frame), and <Center> would measure an empty group while the GLB is still loading
-            (-> position -Infinity), so GLB mode uses a plain group. */}
-        <HeartWrapper>
-          {/* 1. Heart anatomy mesh with node click: procedural (default) or Z-Anatomy GLB (PUBLIC_HEART_RENDERER=glb) */}
+        <group name="heart-scene-wrapper">
+          {/* 1. Heart anatomy mesh with node click: procedural or Z-Anatomy GLB */}
           {USE_GLB ? (
             <Suspense fallback={null}>
               <HeartMeshGLB
@@ -134,7 +192,7 @@ export function CardiacTwinCanvas({
             onSelectSegment={onSelectSegment}
           />
 
-          {/* 3. Synchronized Fibrous Mitral & Aortic Valves (procedural overlay; the GLB has its own leaflets) */}
+          {/* 3. Synchronized Fibrous Mitral & Aortic Valves (procedural overlay; GLB has its own leaflets) */}
           {showValves && !USE_GLB && (
             <ValveLeaflets
               kinematics={kinematics}
@@ -157,12 +215,12 @@ export function CardiacTwinCanvas({
             visible={showSlicePlane && viewMode !== "none"}
             opacity={0.18}
           />
-        </HeartWrapper>
+        </group>
 
-        {/* Studio Ground Grid Floor */}
+        {/* Studio Ground Grid Floor positioned just beneath the apex */}
         <gridHelper
           args={[14, 28, "#27272a", "#121214"]}
-          position={[0, -2.4, 0]}
+          position={[0, -2.8, 0]}
         />
       </Canvas>
     </div>
