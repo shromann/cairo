@@ -1,4 +1,4 @@
-# Cairo: Open-Source AI for Echocardiography Measurement & Diagnosis
+# Cairo: AI for Echocardiography Measurement & Diagnosis
 
 > **Automate echo measurement in 2 minutes. Enable rural clinics to screen 100 patients/week without specialist oversight.**
 
