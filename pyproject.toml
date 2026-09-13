@@ -35,6 +35,7 @@ dependencies = [
     "timm>=0.9.0",                       # ConvNeXt backbone required by torch.hub PanEcho
     "opencv-python-headless>=4.10.0",   # AVI decoding, no GUI deps
     "numpy>=1.26.0",
+    "pandas>=2.0.0",                     # PanEcho hubconf reads its task table with pandas
     "pillow>=10.3.0",
 
     # --- Report generation ---
