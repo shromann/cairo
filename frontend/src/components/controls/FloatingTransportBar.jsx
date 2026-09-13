@@ -69,7 +69,6 @@ export function FloatingTransportBar({
       {/* 2. Cardiac Phase Readout Badge */}
       <div className="transport-phase-badge">
         <span className="dot dot-cyan"></span>
-        <span className="t-phase-name">{phaseName}</span>
         <span className="t-phase-pct">{phasePercent}%</span>
       </div>
 
@@ -112,18 +111,7 @@ export function FloatingTransportBar({
       <div className="transport-rate-group">
         <div className="bpm-pill">
           <Activity size={12} className="text-muted" />
-          <select
-            value={bpm}
-            onChange={(e) => onChangeBpm(parseInt(e.target.value))}
-            className="transport-bpm-select"
-          >
-            <option value={50}>50 BPM</option>
-            <option value={60}>60 BPM</option>
-            <option value={70}>70 BPM</option>
-            <option value={80}>80 BPM</option>
-            <option value={100}>100 BPM</option>
-            <option value={120}>120 BPM</option>
-          </select>
+          <span className="transport-bpm-text">{bpm} BPM</span>
         </div>
 
         <div className="speed-pill-group">

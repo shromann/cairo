@@ -9,7 +9,6 @@ import { PatientDirectory } from "./directory/PatientDirectory";
 import { CardiacTwinCanvas } from "./twin/CardiacTwinCanvas";
 import { BlenderViewportToolbar } from "./controls/BlenderViewportToolbar";
 import { FloatingTransportBar } from "./controls/FloatingTransportBar";
-import { StudySelector } from "./controls/StudySelector";
 
 import { VolumeCurveChart } from "./telemetry/VolumeCurveChart";
 import { WiggersDiagram } from "./telemetry/WiggersDiagram";
@@ -65,7 +64,7 @@ export function CardiacTwinDashboard() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [bpm, setBpm] = useState(70);
   const [speedMultiplier, setSpeedMultiplier] = useState(1.0);
-  const [activeTab, setActiveTab] = useState("clinical"); // "clinical" | "telemetry" | "video"
+  const [activeTab, setActiveTab] = useState("video"); // DEFAULT: "video" (Echo & Bullseye)
 
   // Load cohort studies on mount
   useEffect(() => {
@@ -253,17 +252,6 @@ export function CardiacTwinDashboard() {
 
         {/* Header Right Actions */}
         <div className="header-actions">
-          <StudySelector
-            cohort={cohort}
-            selectedStudyId={currentStudy?.id || ""}
-            onSelectStudy={(study) => {
-              setCurrentStudy(study);
-              setSelectedPatient(matchPatientForStudy(study.id, cohort));
-              setHighlightSegment(null);
-              setSelectedNode(null);
-            }}
-          />
-
           <button
             className="model-tag-badge"
             onClick={runInference}
@@ -397,56 +385,22 @@ export function CardiacTwinDashboard() {
             {/* Tabs Navigation */}
             <div className="sidebar-tabs-nav">
               <button
+                className={`sidebar-tab-btn ${activeTab === "video" ? "active" : ""}`}
+                onClick={() => setActiveTab("video")}
+              >
+                <Activity size={14} />
+                <span>Echo &amp; Curves</span>
+              </button>
+              <button
                 className={`sidebar-tab-btn ${activeTab === "clinical" ? "active" : ""}`}
                 onClick={() => setActiveTab("clinical")}
               >
                 <FileText size={14} />
-                <span>PanEcho AI (40)</span>
-              </button>
-              <button
-                className={`sidebar-tab-btn ${activeTab === "telemetry" ? "active" : ""}`}
-                onClick={() => setActiveTab("telemetry")}
-              >
-                <Activity size={14} />
-                <span>Curves</span>
-              </button>
-              <button
-                className={`sidebar-tab-btn ${activeTab === "video" ? "active" : ""}`}
-                onClick={() => setActiveTab("video")}
-              >
-                <Play size={14} />
-                <span>Echo &amp; Bullseye</span>
+                <span>PanEcho AI</span>
               </button>
             </div>
 
-            {/* Tab 1: PanEcho AI 40-Head Clinical Diagnostics */}
-            {activeTab === "clinical" && (
-              <div className="tab-pane">
-                <PanEchoDrawer
-                  studyResults={studyResults}
-                  onRunInference={runInference}
-                  inferring={inferring}
-                />
-              </div>
-            )}
-
-            {/* Tab 2: Telemetry Curves */}
-            {activeTab === "telemetry" && (
-              <div className="tab-pane telemetry-pane">
-                <VolumeCurveChart
-                  telemetryData={telemetryData}
-                  currentPhase={phase}
-                  studyParams={studyParams}
-                />
-                <WiggersDiagram
-                  telemetryData={telemetryData}
-                  currentPhase={phase}
-                  studyParams={studyParams}
-                />
-              </div>
-            )}
-
-            {/* Tab 3: Echo Video & AHA Bullseye */}
+            {/* Tab 1: Echo Video, AHA Bullseye & Hemodynamic Telemetry Curves */}
             {activeTab === "video" && (
               <div className="tab-pane video-bullseye-pane">
                 <VideoSyncPlayer
@@ -462,6 +416,27 @@ export function CardiacTwinDashboard() {
                   strains={studyResults.aha17Strains}
                   highlightSegment={highlightSegment}
                   onSelectSegment={handleSelectSegment}
+                />
+                <VolumeCurveChart
+                  telemetryData={telemetryData}
+                  currentPhase={phase}
+                  studyParams={studyParams}
+                />
+                <WiggersDiagram
+                  telemetryData={telemetryData}
+                  currentPhase={phase}
+                  studyParams={studyParams}
+                />
+              </div>
+            )}
+
+            {/* Tab 2: PanEcho AI 40-Head Clinical Diagnostics */}
+            {activeTab === "clinical" && (
+              <div className="tab-pane">
+                <PanEchoDrawer
+                  studyResults={studyResults}
+                  onRunInference={runInference}
+                  inferring={inferring}
                 />
               </div>
             )}

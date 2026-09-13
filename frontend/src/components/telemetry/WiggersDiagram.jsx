@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from "react";
 
 /**
- * Wiggers Diagram: Synchronized Multichannel Hemodynamics & Electrophysiology (Instatic Palette)
- * Displays LV/Aortic/LA Pressures, Volume, ECG Waveform, and Phase cursor.
+ * Wiggers Diagram: Synchronized Multichannel Hemodynamics & Electrophysiology
+ * Displays LV/Aortic/LA Pressures, Volume, Lead II ECG Waveform, and Phase cursor.
  */
 export function WiggersDiagram({
   telemetryData = [],
@@ -18,7 +18,7 @@ export function WiggersDiagram({
     const ctx = canvas.getContext("2d");
     const dpr = window.devicePixelRatio || 1;
     const width = canvas.parentElement.clientWidth;
-    const height = 180;
+    const height = 190;
 
     canvas.width = width * dpr;
     canvas.height = height * dpr;
@@ -28,7 +28,7 @@ export function WiggersDiagram({
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, width, height);
 
-    const padding = { top: 20, right: 30, bottom: 20, left: 38 };
+    const padding = { top: 18, right: 14, bottom: 20, left: 38 };
     const chartW = width - padding.left - padding.right;
 
     // Top Channel: Pressures (0 to 140 mmHg)
@@ -37,18 +37,33 @@ export function WiggersDiagram({
     const maxP = 140;
 
     // Bottom Channel: ECG Waveform
-    const ecgH = 45;
-    const ecgY0 = pressY0 + pressH + 12;
+    const ecgH = 40;
+    const ecgY0 = pressY0 + pressH + 16;
 
-    // Background & Phase Divisions
+    // 1. Shaded Phase Divisions (Systole vs Diastole)
+    const systoleW = 0.38 * chartW;
     ctx.fillStyle = "rgba(248, 113, 113, 0.04)";
-    ctx.fillRect(padding.left, pressY0, 0.38 * chartW, pressH + ecgH + 12);
+    ctx.fillRect(padding.left, pressY0, systoleW, pressH + ecgH + 16);
 
     ctx.fillStyle = "rgba(155, 220, 255, 0.02)";
-    ctx.fillRect(padding.left + 0.38 * chartW, pressY0, 0.62 * chartW, pressH + ecgH + 12);
+    ctx.fillRect(padding.left + systoleW, pressY0, chartW - systoleW, pressH + ecgH + 16);
 
-    // Pressure Grid lines
-    ctx.strokeStyle = "#27272a";
+    // Subtle phase text headers
+    ctx.fillStyle = "#f87171";
+    ctx.font = "8.5px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("SYSTOLE", padding.left + systoleW * 0.5, pressY0 - 5);
+
+    ctx.fillStyle = "#9bdcff";
+    ctx.fillText("DIASTOLE", padding.left + systoleW + (chartW - systoleW) * 0.5, pressY0 - 5);
+
+    // 2. Pressure Channel Y-Axis Units & Grid lines
+    ctx.fillStyle = "#71717a";
+    ctx.font = "9px JetBrains Mono, monospace";
+    ctx.textAlign = "right";
+    ctx.fillText("mmHg", padding.left - 6, pressY0 - 5);
+
+    ctx.strokeStyle = "#232328";
     ctx.lineWidth = 1;
     [0, 40, 80, 120].forEach((p) => {
       const y = pressY0 + pressH - (p / maxP) * pressH;
@@ -63,7 +78,20 @@ export function WiggersDiagram({
       ctx.fillText(`${p}`, padding.left - 6, y + 3);
     });
 
-    // 1. Draw Aortic Pressure Curve (Lavender)
+    // Channel Divider Line between Pressure & ECG
+    ctx.strokeStyle = "#27272f";
+    ctx.beginPath();
+    ctx.moveTo(padding.left, pressY0 + pressH + 8);
+    ctx.lineTo(padding.left + chartW, pressY0 + pressH + 8);
+    ctx.stroke();
+
+    // ECG Y-Axis Gutter Label
+    ctx.fillStyle = "#71717a";
+    ctx.font = "9px JetBrains Mono, monospace";
+    ctx.textAlign = "right";
+    ctx.fillText("ECG", padding.left - 6, ecgY0 + ecgH * 0.5 + 3);
+
+    // 3. Draw Aortic Pressure Curve (Lavender)
     ctx.beginPath();
     telemetryData.forEach((pt, idx) => {
       const x = padding.left + pt.t * chartW;
@@ -75,7 +103,7 @@ export function WiggersDiagram({
     ctx.lineWidth = 1.8;
     ctx.stroke();
 
-    // 2. Draw LV Pressure Curve (Sky Blue)
+    // 4. Draw LV Pressure Curve (Sky Blue)
     ctx.beginPath();
     telemetryData.forEach((pt, idx) => {
       const x = padding.left + pt.t * chartW;
@@ -84,10 +112,10 @@ export function WiggersDiagram({
       else ctx.lineTo(x, y);
     });
     ctx.strokeStyle = "#9bdcff";
-    ctx.lineWidth = 1.8;
+    ctx.lineWidth = 2.0;
     ctx.stroke();
 
-    // 3. Draw LA Pressure Curve (Amber Dotted)
+    // 5. Draw LA Pressure Curve (Amber Dotted)
     ctx.beginPath();
     telemetryData.forEach((pt, idx) => {
       const x = padding.left + pt.t * chartW;
@@ -101,7 +129,7 @@ export function WiggersDiagram({
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // 4. Draw Synthetic Synchronized ECG Lead II (Mint Green)
+    // 6. Draw Synthetic Synchronized Lead II ECG (Mint Green)
     ctx.beginPath();
     for (let i = 0; i <= 200; i++) {
       const t = i / 200;
@@ -117,10 +145,12 @@ export function WiggersDiagram({
         ecgVal = -0.15 * Math.sin((t / 0.03) * Math.PI);
       } else if (t >= 0.03 && t < 0.06) {
         // R-peak (ventricular depolarization)
-        ecgVal = 0.95 * Math.sin(((t - 0.03) / 0.03) * Math.PI);
+        const tau = (t - 0.03) / 0.03;
+        ecgVal = 0.95 * Math.sin(tau * Math.PI);
       } else if (t >= 0.06 && t < 0.09) {
         // S-wave
-        ecgVal = -0.35 * Math.sin(((t - 0.06) / 0.03) * Math.PI);
+        const tau = (t - 0.06) / 0.03;
+        ecgVal = -0.35 * Math.sin(tau * Math.PI);
       } else if (t >= 0.22 && t < 0.38) {
         // T-wave (ventricular repolarization)
         const tau = (t - 0.22) / 0.16;
@@ -135,7 +165,7 @@ export function WiggersDiagram({
     ctx.lineWidth = 1.6;
     ctx.stroke();
 
-    // 5. Draw Live Tracking Phase Cursor
+    // 7. Draw Live Tracking Phase Cursor
     const cursorX = padding.left + currentPhase * chartW;
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 1.5;
@@ -146,28 +176,55 @@ export function WiggersDiagram({
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Channel Legends
-    ctx.font = "9px Inter, sans-serif";
-    ctx.fillStyle = "#9bdcff";
-    ctx.fillText("■ LV Press", padding.left + 4, pressY0 + 10);
+    // Live tracking dots on LV Pressure & ECG
+    const currentPt = telemetryData.find((p) => Math.abs(p.t - currentPhase) < 0.015) || telemetryData[0];
+    if (currentPt) {
+      const dotPressY = pressY0 + pressH - (currentPt.lvPressure / maxP) * pressH;
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(cursorX, dotPressY, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#09090b";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
 
-    ctx.fillStyle = "#c8b6ff";
-    ctx.fillText("■ Aortic", padding.left + 68, pressY0 + 10);
-
-    ctx.fillStyle = "#fbbf24";
-    ctx.fillText("■ LA", padding.left + 120, pressY0 + 10);
-
-    ctx.fillStyle = "#8ee6c8";
-    ctx.fillText("■ ECG Lead II", padding.left + 4, ecgY0 + 10);
+    // 8. Bottom X-Axis Progression
+    ctx.fillStyle = "#71717a";
+    ctx.font = "9px JetBrains Mono, monospace";
+    ctx.textAlign = "right";
+    ctx.fillText("0% → 100%", padding.left + chartW, ecgY0 + ecgH + 15);
   }, [telemetryData, currentPhase, studyParams]);
 
   return (
     <div className="telemetry-chart-card">
       <div className="telemetry-chart-header">
-        <span className="telemetry-title">Synchronized Wiggers Diagram (Pressure &amp; ECG)</span>
-        <span className="telemetry-badge-alt">Multichannel</span>
+        <span className="telemetry-title">Wiggers Hemodynamic Diagram</span>
+        <span className="telemetry-badge-alt">Pressure &amp; ECG</span>
       </div>
+
+      {/* Clean, Non-Overlapping Legend Row */}
+      <div className="telemetry-legend-row">
+        <div className="telemetry-legend-item">
+          <span className="telemetry-legend-line" style={{ background: "#9bdcff" }} />
+          <span>LV Press</span>
+        </div>
+        <div className="telemetry-legend-item">
+          <span className="telemetry-legend-line" style={{ background: "#c8b6ff" }} />
+          <span>Aorta</span>
+        </div>
+        <div className="telemetry-legend-item">
+          <span className="telemetry-legend-line" style={{ background: "#fbbf24", borderTop: "1px dashed #fbbf24" }} />
+          <span>LA</span>
+        </div>
+        <div className="telemetry-legend-item">
+          <span className="telemetry-legend-line" style={{ background: "#8ee6c8" }} />
+          <span>Lead II</span>
+        </div>
+      </div>
+
       <canvas ref={canvasRef} style={{ width: "100%", display: "block" }} />
     </div>
   );
 }
+

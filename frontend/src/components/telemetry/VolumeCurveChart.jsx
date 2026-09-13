@@ -118,11 +118,11 @@ export function VolumeCurveChart({
       ctx.stroke();
     }
 
-    // Units label
-    ctx.fillStyle = "#a1a1aa";
-    ctx.font = "9px Inter, sans-serif";
-    ctx.textAlign = "left";
-    ctx.fillText("LV Vol (mL)", padding.left, padding.top - 6);
+    // Units label (positioned in y-axis gutter, completely clear of phase banners)
+    ctx.fillStyle = "#71717a";
+    ctx.font = "9px JetBrains Mono, monospace";
+    ctx.textAlign = "right";
+    ctx.fillText("mL", padding.left - 6, padding.top - 6);
 
     ctx.textAlign = "right";
     ctx.font = "9px JetBrains Mono, monospace";

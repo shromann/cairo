@@ -10,6 +10,7 @@ import { AHA17Heatmap } from "./AHA17Heatmap";
 import { ValveLeaflets } from "./ValveLeaflets";
 import { UltrasoundSlicePlane, getClippingPlanesForMode } from "./UltrasoundSlicePlane";
 import { SimpsonTracingsOverlay } from "./SimpsonTracingsOverlay";
+import { ECGBackgroundWave } from "./ECGBackgroundWave";
 
 // Kill switch for the mesh migration: "glb" loads public/models/heart.glb, anything else keeps the procedural heart.
 const USE_GLB = import.meta.env.PUBLIC_HEART_RENDERER === "glb";
@@ -79,11 +80,11 @@ function CameraController({ preset, onPresetHandled }) {
     if (!preset) return;
 
     const targets = {
-      anterior: { pos: [0, 0.45, 7.8], target: [0, 0.25, 0.3] },
-      lateral: { pos: [-7.2, 0.45, 1.8], target: [0, 0.25, 0.3] },
-      superior: { pos: [0.3, 7.2, 2.6], target: [0, 0.25, 0.3] },
-      apical: { pos: [0, -6.8, 3.4], target: [0, 0.25, 0.3] },
-      reset: { pos: [0, 0.45, 7.8], target: [0, 0.25, 0.3] }
+      anterior: { pos: [0, 0.5, 16.5], target: [0, 0.1, 0.3] },
+      lateral: { pos: [-15.5, 0.5, 3.8], target: [0, 0.1, 0.3] },
+      superior: { pos: [0.3, 15.5, 5.5], target: [0, 0.1, 0.3] },
+      apical: { pos: [0, -15.0, 7.0], target: [0, 0.1, 0.3] },
+      reset: { pos: [0, 0.5, 16.5], target: [0, 0.1, 0.3] }
     };
 
     const cfg = targets[preset] || targets.anterior;
@@ -125,6 +126,13 @@ export function CardiacTwinCanvas({
 
   return (
     <div className="cardiac-canvas-container" style={{ width: "100%", height: "100%", position: "relative" }}>
+      {/* Real-Time Lead II ECG Background Waveform on bottom below the heart */}
+      <ECGBackgroundWave
+        currentPhase={kinematics?.phase ?? 0}
+        bpm={kinematics?.heartRate ?? 70}
+        isPlaying={true}
+      />
+
       {/* 3D Model Loading Spinner Overlay */}
       <ModelLoadingOverlay />
 
@@ -141,17 +149,17 @@ export function CardiacTwinCanvas({
         <DebugProbe />
         <CameraController preset={cameraPreset} onPresetHandled={onCameraPresetHandled} />
 
-        {/* Reframed Perspective Camera: perfectly centered, comfortable focal length without wide-angle distortion */}
-        <PerspectiveCamera makeDefault position={[0, 0.45, 7.8]} fov={38} />
+        {/* Reframed Perspective Camera: zoomed out with generous padding and vertical clearance */}
+        <PerspectiveCamera makeDefault position={[0, 0.5, 16.5]} fov={30} />
 
         {/* OrbitControls pivoting around the true volumetric centroid of the heart */}
         <OrbitControls
           ref={controlsRef}
           enableDamping
           dampingFactor={0.06}
-          minDistance={3.0}
-          maxDistance={12.0}
-          target={[0, 0.25, 0.3]}
+          minDistance={5.0}
+          maxDistance={35.0}
+          target={[0, 0.1, 0.3]}
         />
 
         {/* --- DIFFUSE MEDICAL STUDIO LIGHTING --- */}
