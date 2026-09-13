@@ -93,6 +93,16 @@ export function CardiacTwinDashboard() {
     return matchPatientForStudy(currentStudy?.id, cohort);
   }, [selectedPatient, currentStudy?.id, cohort]);
 
+  // Synchronize cardiac clock BPM with the patient's recorded telemetry vitals
+  useEffect(() => {
+    if (activePatient?.recentVitals?.hr) {
+      const parsedBpm = parseInt(activePatient.recentVitals.hr, 10);
+      if (!isNaN(parsedBpm) && parsedBpm > 0) {
+        setBpm(parsedBpm);
+      }
+    }
+  }, [activePatient]);
+
   const runInference = useCallback(async () => {
     if (!currentStudy) return;
     setInferring(true);

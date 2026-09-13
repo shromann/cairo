@@ -18,7 +18,7 @@ export function WiggersDiagram({
     const ctx = canvas.getContext("2d");
     const dpr = window.devicePixelRatio || 1;
     const width = canvas.parentElement.clientWidth;
-    const height = 190;
+    const height = 215;
 
     canvas.width = width * dpr;
     canvas.height = height * dpr;
@@ -28,40 +28,40 @@ export function WiggersDiagram({
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, width, height);
 
-    const padding = { top: 18, right: 14, bottom: 20, left: 38 };
+    const padding = { top: 28, right: 20, bottom: 24, left: 42 };
     const chartW = width - padding.left - padding.right;
 
     // Top Channel: Pressures (0 to 140 mmHg)
-    const pressH = 100;
+    const pressH = 108;
     const pressY0 = padding.top;
     const maxP = 140;
 
     // Bottom Channel: ECG Waveform
     const ecgH = 40;
-    const ecgY0 = pressY0 + pressH + 16;
+    const ecgY0 = pressY0 + pressH + 18;
 
     // 1. Shaded Phase Divisions (Systole vs Diastole)
     const systoleW = 0.38 * chartW;
     ctx.fillStyle = "rgba(248, 113, 113, 0.04)";
-    ctx.fillRect(padding.left, pressY0, systoleW, pressH + ecgH + 16);
+    ctx.fillRect(padding.left, pressY0, systoleW, pressH + ecgH + 18);
 
     ctx.fillStyle = "rgba(155, 220, 255, 0.02)";
-    ctx.fillRect(padding.left + systoleW, pressY0, chartW - systoleW, pressH + ecgH + 16);
+    ctx.fillRect(padding.left + systoleW, pressY0, chartW - systoleW, pressH + ecgH + 18);
 
     // Subtle phase text headers
     ctx.fillStyle = "#f87171";
     ctx.font = "8.5px Inter, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("SYSTOLE", padding.left + systoleW * 0.5, pressY0 - 5);
+    ctx.fillText("SYSTOLE", padding.left + systoleW * 0.5, pressY0 - 8);
 
     ctx.fillStyle = "#9bdcff";
-    ctx.fillText("DIASTOLE", padding.left + systoleW + (chartW - systoleW) * 0.5, pressY0 - 5);
+    ctx.fillText("DIASTOLE", padding.left + systoleW + (chartW - systoleW) * 0.5, pressY0 - 8);
 
     // 2. Pressure Channel Y-Axis Units & Grid lines
     ctx.fillStyle = "#71717a";
     ctx.font = "9px JetBrains Mono, monospace";
     ctx.textAlign = "right";
-    ctx.fillText("mmHg", padding.left - 6, pressY0 - 5);
+    ctx.fillText("mmHg", padding.left - 6, pressY0 - 8);
 
     ctx.strokeStyle = "#232328";
     ctx.lineWidth = 1;
@@ -81,8 +81,8 @@ export function WiggersDiagram({
     // Channel Divider Line between Pressure & ECG
     ctx.strokeStyle = "#27272f";
     ctx.beginPath();
-    ctx.moveTo(padding.left, pressY0 + pressH + 8);
-    ctx.lineTo(padding.left + chartW, pressY0 + pressH + 8);
+    ctx.moveTo(padding.left, pressY0 + pressH + 9);
+    ctx.lineTo(padding.left + chartW, pressY0 + pressH + 9);
     ctx.stroke();
 
     // ECG Y-Axis Gutter Label

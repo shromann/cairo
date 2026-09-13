@@ -17,7 +17,7 @@ export function VolumeCurveChart({
     const ctx = canvas.getContext("2d");
     const dpr = window.devicePixelRatio || 1;
     const width = canvas.parentElement.clientWidth;
-    const height = 150;
+    const height = 175;
 
     canvas.width = width * dpr;
     canvas.height = height * dpr;
@@ -27,8 +27,8 @@ export function VolumeCurveChart({
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, width, height);
 
-    // Layout
-    const padding = { top: 20, right: 30, bottom: 22, left: 40 };
+    // Layout with generous padding and vertical clearance
+    const padding = { top: 28, right: 20, bottom: 24, left: 42 };
     const chartW = width - padding.left - padding.right;
     const chartH = height - padding.top - padding.bottom;
 
@@ -36,7 +36,7 @@ export function VolumeCurveChart({
     const minVol = 0;
 
     // Draw Background Grid Lines
-    ctx.strokeStyle = "#27272a";
+    ctx.strokeStyle = "#232328";
     ctx.lineWidth = 1;
 
     // Horizontal grid lines
@@ -50,26 +50,26 @@ export function VolumeCurveChart({
       ctx.stroke();
 
       ctx.fillStyle = "#71717a";
-      ctx.font = "10px JetBrains Mono, monospace";
+      ctx.font = "9px JetBrains Mono, monospace";
       ctx.textAlign = "right";
       ctx.fillText(`${Math.round(yVal)}`, padding.left - 6, y + 3);
     }
 
     // Phase markers (Systole / Diastole divider at t = 0.38)
     const systoleEndX = padding.left + 0.38 * chartW;
-    ctx.fillStyle = "rgba(248, 113, 113, 0.05)";
+    ctx.fillStyle = "rgba(248, 113, 113, 0.04)";
     ctx.fillRect(padding.left, padding.top, 0.38 * chartW, chartH);
 
-    ctx.fillStyle = "rgba(155, 220, 255, 0.03)";
+    ctx.fillStyle = "rgba(155, 220, 255, 0.02)";
     ctx.fillRect(systoleEndX, padding.top, 0.62 * chartW, chartH);
 
     ctx.fillStyle = "#f87171";
-    ctx.font = "9px Inter, sans-serif";
+    ctx.font = "8.5px Inter, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("SYSTOLE", padding.left + 0.19 * chartW, padding.top - 6);
+    ctx.fillText("SYSTOLE", padding.left + 0.19 * chartW, padding.top - 8);
 
     ctx.fillStyle = "#9bdcff";
-    ctx.fillText("DIASTOLE", padding.left + 0.69 * chartW, padding.top - 6);
+    ctx.fillText("DIASTOLE", padding.left + 0.69 * chartW, padding.top - 8);
 
     // Draw V(t) Volume Curve
     ctx.beginPath();
@@ -82,7 +82,7 @@ export function VolumeCurveChart({
 
     // Gradient fill under volume curve
     const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
-    gradient.addColorStop(0, "rgba(155, 220, 255, 0.25)");
+    gradient.addColorStop(0, "rgba(155, 220, 255, 0.22)");
     gradient.addColorStop(1, "rgba(155, 220, 255, 0.0)");
 
     ctx.strokeStyle = "#9bdcff";
@@ -122,7 +122,7 @@ export function VolumeCurveChart({
     ctx.fillStyle = "#71717a";
     ctx.font = "9px JetBrains Mono, monospace";
     ctx.textAlign = "right";
-    ctx.fillText("mL", padding.left - 6, padding.top - 6);
+    ctx.fillText("mL", padding.left - 6, padding.top - 8);
 
     ctx.textAlign = "right";
     ctx.font = "9px JetBrains Mono, monospace";
