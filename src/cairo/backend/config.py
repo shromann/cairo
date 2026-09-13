@@ -5,7 +5,7 @@ Centralised application settings loaded from environment variables.
 
 All secrets arrive via environment variables — never hardcoded.
 In Cloud Run, Secret Manager secrets are projected as env vars by the
-service configuration (see infra/06-deploy.sh).
+service configuration (see infra/09-deploy.sh).
 
 Local development:
   Copy .env.example -> .env and fill in the values.
@@ -145,6 +145,22 @@ class Settings(BaseSettings):
         default=900,
         description="Signed URL validity window in seconds (default 15 min).",
     )
+
+    # ------------------------------------------------------------------
+    # CORS
+    # ------------------------------------------------------------------
+    cors_origins: str = Field(
+        default="http://localhost:4321,http://127.0.0.1:4321",
+        description=(
+            "Comma-separated allowed origins for browser requests. "
+            "Set to the deployed frontend URL in staging/production."
+        ),
+        alias="CORS_ORIGINS",
+    )
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
     # ------------------------------------------------------------------
     # Pub/Sub

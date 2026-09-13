@@ -1,0 +1,12 @@
+.venv
+.git
+.env
+.env.*
+env.sh
+frontend
+tools
+docs
+alembic/versions/__pycache__
+**/__pycache__
+*.pyc
+.DS_Store

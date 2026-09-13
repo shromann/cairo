@@ -33,13 +33,14 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session, selectinload
 
 from cairo.backend import repositories as repo
+from cairo.backend.config import settings
 from cairo.backend.db import get_session
 from cairo.backend.models import Patient, Study, Video, VideoLabel, VideoPrediction, VideoStatus
 
 app = FastAPI(title="cairo", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4321", "http://127.0.0.1:4321"],
+    allow_origins=settings.cors_origins_list,
     allow_methods=["*"],
     allow_headers=["*"],
 )

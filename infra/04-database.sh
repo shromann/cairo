@@ -35,7 +35,7 @@ readonly POLL_TIMEOUT=600   # 10 min max wait
 #
 # Tier: db-g1-small — satisfies MCP's min max_connections requirement.
 # Swap for db-f1-micro only if you skip Managed Connection Pooling and
-# cap web instances at 10 (see 06-deploy.sh).
+# cap web instances at 10 (see 09-deploy.sh).
 # ---------------------------------------------------------------------------
 create_instance() {
   if gcloud sql instances describe "$SQL_INSTANCE" &>/dev/null; then

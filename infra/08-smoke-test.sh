@@ -11,7 +11,8 @@
 #
 # NOTE: The Pub/Sub push subscription wiring video-jobs -> cairo-worker is
 # also created here, because it needs the worker's Cloud Run URL.
-# Run this script again after the real worker image is deployed in 06-deploy.
+# Run this script again after the real worker image is deployed (see the
+# NOTE at the end of infra/09-deploy.sh — the worker handler doesn't exist yet).
 # =============================================================================
 
 set -euo pipefail
@@ -72,7 +73,7 @@ verify_web() {
   echo "$response"
   log "Web smoke test passed."
 
-  # Persist URL to env.sh for use in 06-deploy
+  # Persist URL to env.sh for use in 09-deploy
   if grep -q '^export WEB_URL=' ../env.sh 2>/dev/null; then
     sed -i.bak "s|^export WEB_URL=.*|export WEB_URL=\"${url}\"|" ../env.sh
     rm -f ../env.sh.bak
