@@ -10,3 +10,38 @@ wheels/
 .venv
 
 uv.lock
+
+# =============================================================================
+# Cairo — secrets and local environment
+# =============================================================================
+
+# GCP environment — contains billing account, project IDs, and generated secrets
+env.sh
+
+# Any downloaded GCP service account key files (should never be needed — we
+# use Workload Identity / self-impersonation, but guard against accidents)
+*.json.key
+*-service-account.json
+*-keyfile.json
+
+# Local .env files for development
+.env
+.env.*
+!.env.example
+
+# Terraform state (if added later)
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# macOS
+.DS_Store
+# frontend
+frontend/node_modules/
+frontend/.astro/
+frontend/dist/
+
+# heart asset pipeline (source repo + intermediates are rebuilt by npm run build:heart)
+tools/heart-asset/.cache/
+tools/heart-asset/node_modules/
+.deploy-image

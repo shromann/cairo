@@ -1,0 +1,15 @@
+{
+  "name": "cairo-heart-asset",
+  "private": true,
+  "type": "module",
+  "description": "Reproducible pipeline: Z-Anatomy CardioVascular FBX -> culled, oriented, Draco-compressed heart.glb + manifest",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "^4.2.0",
+    "@gltf-transform/core": "^4.2.0",
+    "@gltf-transform/functions": "^4.2.0",
+    "fbx2gltf": "^0.9.7-p1"
+  }
+}

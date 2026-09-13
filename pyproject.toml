@@ -1,20 +1,84 @@
 [project]
 name = "cairo"
 version = "0.1.0"
-description = "Add your description here"
+description = "PanEcho echocardiography AI pipeline — GCP-hosted inference service"
 readme = "README.md"
 authors = [
     { name = "Shromann Majumder", email = "shromannmajumder@gmail.com" }
 ]
 requires-python = ">=3.12"
+
 dependencies = [
-    "flask>=3.1.3",
-    "typer>=0.27.2",
+    # --- Web framework ---
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+
+    # --- Data validation and settings ---
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.3.0",
+
+    # --- Database ---
+    "sqlalchemy>=2.0.31",
+    "alembic>=1.13.2",          # schema migrations
+    "pg8000>=1.31.2",           # pure-Python PostgreSQL driver (used by Cloud SQL connector)
+    "cloud-sql-python-connector[pg8000]>=1.11.0",  # IAM-authenticated socket to Cloud SQL
+
+    # --- GCP clients ---
+    "google-cloud-storage>=2.17.0",
+    "google-cloud-pubsub>=2.23.0",
+    "google-cloud-secret-manager>=2.20.0",
+    "google-auth>=2.32.0",
+
+    # --- Inference (PanEcho / ConvNeXt-Tiny) ---
+    "torch>=2.3.0",
+    "torchvision>=0.18.0",
+    "timm>=0.9.0",                       # ConvNeXt backbone required by torch.hub PanEcho
+    "opencv-python-headless>=4.10.0",   # AVI decoding, no GUI deps
+    "numpy>=1.26.0",
+    "pandas>=2.0.0",                     # PanEcho hubconf reads its task table with pandas
+    "pillow>=10.3.0",
+
+    # --- Report generation ---
+    "reportlab>=4.2.0",                  # PDF rendering
+
+    # --- Observability ---
+    "structlog>=24.1.0",                 # structured JSON logging
+    "python-json-logger>=2.0.7",
+
+    # --- CLI ---
+    "typer>=0.12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.7",
+    "httpx>=0.27.0",            # async test client for FastAPI
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+    "types-pillow>=10.2.0",
 ]
 
 [project.scripts]
-cairo = "cairo:main"
+cairo = "cairo.cli:app"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "ANN"]
+ignore = ["ANN101", "ANN102"]  # self / cls type annotations
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
