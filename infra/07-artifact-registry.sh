@@ -58,7 +58,8 @@ bind_build_roles() {
   for role in \
     roles/artifactregistry.writer \
     roles/storage.admin \
-    roles/logging.logWriter
+    roles/logging.logWriter \
+    roles/run.admin              # required to deploy Cloud Run services from Cloud Build
   do
     log "  ${role}"
     gcloud projects add-iam-policy-binding "$PROJECT_ID" \
