@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # cairo-web: FastAPI (PanEcho inference + DB API) serving the built Astro frontend from one container.
-# Built by Cloud Build (infra/09-deploy-web.sh); runs on Cloud Run with Cloud SQL via the connector.
+# Built by Cloud Build (scripts/09-deploy-web.sh); runs on Cloud Run with Cloud SQL via the connector.
 
 # ---- stage 1: frontend ------------------------------------------------------------------------
 FROM node:22-slim AS frontend
@@ -32,7 +32,7 @@ COPY alembic ./alembic
 # Bake PanEcho weights + ConvNeXt backbone into the image so cold starts don't hit GitHub.
 RUN python -c "import torch; torch.hub.load('CarDS-Yale/PanEcho', 'PanEcho', tasks='all', trust_repo=True, verbose=False); print('PanEcho cached')"
 COPY --from=frontend /app/frontend/dist ./frontend/dist
-COPY infra/entrypoint.sh /app/entrypoint.sh
+COPY scripts/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 EXPOSE 8080
 CMD ["/app/entrypoint.sh"]
