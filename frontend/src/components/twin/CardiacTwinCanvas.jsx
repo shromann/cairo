@@ -1,5 +1,5 @@
-import React, { Suspense, useMemo, useState, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
+import React, { Suspense, useMemo, useState, useEffect, useRef } from "react";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, useProgress } from "@react-three/drei";
 import * as THREE from "three";
 import { Heart } from "lucide-react";
@@ -69,14 +69,43 @@ function ModelLoadingOverlay() {
 }
 
 /**
+ * Smooth Camera Controller for 1-Click Anatomical View Presets
+ */
+function CameraController({ preset, onPresetHandled }) {
+  const { camera } = useThree();
+  const controlsRef = useRef();
+
+  useEffect(() => {
+    if (!preset) return;
+
+    const targets = {
+      anterior: { pos: [0, 0.45, 7.8], target: [0, 0.25, 0.3] },
+      lateral: { pos: [-7.2, 0.45, 1.8], target: [0, 0.25, 0.3] },
+      superior: { pos: [0.3, 7.2, 2.6], target: [0, 0.25, 0.3] },
+      apical: { pos: [0, -6.8, 3.4], target: [0, 0.25, 0.3] },
+      reset: { pos: [0, 0.45, 7.8], target: [0, 0.25, 0.3] }
+    };
+
+    const cfg = targets[preset] || targets.anterior;
+    camera.position.set(...cfg.pos);
+    camera.lookAt(...cfg.target);
+
+    if (onPresetHandled) onPresetHandled();
+  }, [preset, camera, onPresetHandled]);
+
+  return null;
+}
+
+/**
  * React Three Fiber 3D Canvas Viewport for the Cardiac Digital Twin
  * High-End Cinematic Medical Studio Viewport
  */
 export function CardiacTwinCanvas({
   kinematics,
   strains = [],
-  displayMode = "solid", // "solid" | "wireframe" | "xray" | "heatmap"
-  viewMode = "none",     // "none" | "A4C" | "A2C" | "PLAX" | "PSAX"
+  displayMode = "wireframe", // "wireframe" | "solid" | "xray" | "heatmap"
+  viewMode = "none",         // "none" | "A4C" | "A2C" | "PLAX" | "PSAX"
+  cameraPreset = null,
   showHeatmap = false,
   showValves = true,
   showSimpsonTracings = false,
@@ -84,8 +113,11 @@ export function CardiacTwinCanvas({
   highlightSegment = null,
   selectedNodeId = null,
   onSelectSegment = () => {},
-  onSelectNode = () => {}
+  onSelectNode = () => {},
+  onCameraPresetHandled = () => {}
 }) {
+  const controlsRef = useRef();
+
   // Compute hardware clipping planes for current ultrasound viewMode
   const clippingPlanes = useMemo(() => {
     return getClippingPlanesForMode(viewMode);
@@ -107,12 +139,14 @@ export function CardiacTwinCanvas({
         shadows
       >
         <DebugProbe />
+        <CameraController preset={cameraPreset} onPresetHandled={onCameraPresetHandled} />
 
         {/* Reframed Perspective Camera: perfectly centered, comfortable focal length without wide-angle distortion */}
         <PerspectiveCamera makeDefault position={[0, 0.45, 7.8]} fov={38} />
 
         {/* OrbitControls pivoting around the true volumetric centroid of the heart */}
         <OrbitControls
+          ref={controlsRef}
           enableDamping
           dampingFactor={0.06}
           minDistance={3.0}

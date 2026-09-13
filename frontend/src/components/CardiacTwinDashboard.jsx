@@ -52,6 +52,7 @@ export function CardiacTwinDashboard() {
   // 3. 3D Viewport State (DEFAULT WIREFRAME AS REQUESTED)
   const [displayMode, setDisplayMode] = useState("wireframe"); // "wireframe" (DEFAULT) | "solid" | "xray" | "heatmap"
   const [viewMode, setViewMode] = useState("none");             // "none" | "A4C" | "A2C" | "PLAX" | "PSAX"
+  const [cameraPreset, setCameraPreset] = useState("anterior"); // "anterior" | "lateral" | "superior" | "apical" | "reset"
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [showValves, setShowValves] = useState(true);
   const [showSimpsonTracings, setShowSimpsonTracings] = useState(false);
@@ -299,8 +300,10 @@ export function CardiacTwinDashboard() {
               showSimpsonTracings={showSimpsonTracings}
               studyParams={studyParams}
               kinematics={kinematics}
+              activeCameraPreset={cameraPreset}
               onChangeDisplayMode={setDisplayMode}
               onChangeViewMode={setViewMode}
+              onSelectCameraPreset={setCameraPreset}
               onToggleHeatmap={() => setShowHeatmap(!showHeatmap)}
               onToggleValves={() => setShowValves(!showValves)}
               onToggleSimpson={() => setShowSimpsonTracings(!showSimpsonTracings)}
@@ -312,6 +315,7 @@ export function CardiacTwinDashboard() {
               strains={studyResults.aha17Strains}
               displayMode={displayMode}
               viewMode={viewMode}
+              cameraPreset={cameraPreset}
               showHeatmap={showHeatmap}
               showValves={showValves}
               showSimpsonTracings={showSimpsonTracings}
@@ -320,6 +324,7 @@ export function CardiacTwinDashboard() {
               selectedNodeId={selectedNode?.id}
               onSelectSegment={handleSelectSegment}
               onSelectNode={handleSelectNode}
+              onCameraPresetHandled={() => setCameraPreset(null)}
             />
 
             {/* Bottom Floating Blender-Style Transport Timeline */}

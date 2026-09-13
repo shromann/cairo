@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Heart, Stethoscope, ShieldCheck, ArrowRight, Sparkles, Key, UserCheck } from "lucide-react";
+import { Heart, Stethoscope, ShieldCheck, ArrowRight } from "lucide-react";
 
 /**
  * Doctor Authentication & Landing Portal
- * Provides pass-through authentication with 1-click clinical demo login.
+ * Provides pass-through authentication for physician credentials.
  */
 export function DoctorLoginPortal({ onLoginSuccess }) {
   const [doctorId, setDoctorId] = useState("dr.schen@cairo.health");
-  const [password, setPassword] = useState("••••••••••••");
+  const [password, setPassword] = useState("cairo-cardio-2026");
   const [department, setDepartment] = useState("Cardiology & Advanced Imaging");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -16,23 +16,32 @@ export function DoctorLoginPortal({ onLoginSuccess }) {
     setIsLoading(true);
 
     setTimeout(() => {
+      // Derive display name from email or ID if provided
+      let displayName = "Dr. Sarah Chen, MD, FACC";
+      let initials = "SC";
+      if (doctorId && doctorId.includes("@")) {
+        const rawName = doctorId.split("@")[0].replace(/^dr\.?/i, "").replace(/[._-]/g, " ");
+        if (rawName.trim()) {
+          const formatted = rawName.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+          displayName = `Dr. ${formatted}, MD`;
+          initials = rawName.split(" ").map((w) => w.charAt(0).toUpperCase()).join("").slice(0, 2) || "MD";
+        }
+      } else if (doctorId.trim()) {
+        displayName = `Dr. ${doctorId.trim()}`;
+        initials = doctorId.slice(0, 2).toUpperCase();
+      }
+
       const doctorProfile = {
-        name: "Dr. Sarah Chen, MD, FACC",
+        name: displayName,
         title: "Director of Echocardiography & Cardiac Imaging",
         institution: "Cairo Cardiovascular Institute",
         department: department || "Cardiology & Advanced Imaging",
         email: doctorId || "dr.schen@cairo.health",
         id: "MD-90421",
-        avatar: "SC"
+        avatar: initials
       };
       onLoginSuccess(doctorProfile);
     }, 350);
-  };
-
-  const handleQuickDemo = () => {
-    setDoctorId("dr.schen@cairo.health");
-    setPassword("cairo-demo-2026");
-    handleLogin();
   };
 
   return (
@@ -115,11 +124,6 @@ export function DoctorLoginPortal({ onLoginSuccess }) {
             <button type="submit" className="login-submit-btn" disabled={isLoading}>
               <span>{isLoading ? "Authenticating Session…" : "Enter Clinical Workstation"}</span>
               <ArrowRight size={15} />
-            </button>
-
-            <button type="button" className="login-demo-btn" onClick={handleQuickDemo}>
-              <Sparkles size={14} className="accent-sparkle" />
-              <span>Quick Login as Dr. Sarah Chen, MD (Cardiology)</span>
             </button>
           </div>
 

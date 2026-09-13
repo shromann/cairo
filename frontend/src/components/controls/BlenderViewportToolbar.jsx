@@ -7,14 +7,14 @@ import {
   Scissors,
   Layers,
   ChevronDown,
-  Check,
-  Sparkles,
-  Info
+  Camera,
+  RotateCcw,
+  Sparkles
 } from "lucide-react";
 
 /**
  * Blender-Style 3D Viewport Header Toolbar
- * Provides instant viewport shading, ultrasound slicing planes, and layer toggles.
+ * Provides instant viewport shading, ultrasound slicing planes, anatomical camera presets, and layer toggles.
  */
 export function BlenderViewportToolbar({
   displayMode = "wireframe", // DEFAULT IS WIREFRAME
@@ -24,8 +24,10 @@ export function BlenderViewportToolbar({
   showSimpsonTracings = false,
   studyParams,
   kinematics,
+  activeCameraPreset = "anterior",
   onChangeDisplayMode = () => {},
   onChangeViewMode = () => {},
+  onSelectCameraPreset = () => {},
   onToggleHeatmap = () => {},
   onToggleValves = () => {},
   onToggleSimpson = () => {}
@@ -45,6 +47,13 @@ export function BlenderViewportToolbar({
     { id: "A2C", label: "A2C" },
     { id: "PLAX", label: "PLAX" },
     { id: "PSAX", label: "PSAX" }
+  ];
+
+  const cameraPresets = [
+    { id: "anterior", label: "Front" },
+    { id: "lateral", label: "LV Lateral" },
+    { id: "superior", label: "Valves" },
+    { id: "apical", label: "Apical" }
   ];
 
   const ef = studyParams?.ef ? Math.round(studyParams.ef * 10) / 10 : 55;
@@ -98,7 +107,34 @@ export function BlenderViewportToolbar({
 
       <div className="blender-divider-v" />
 
-      {/* 3. Layer Visibility Popover */}
+      {/* 3. Anatomical Camera Presets */}
+      <div className="blender-tool-group">
+        <span className="blender-group-tag">
+          <Camera size={11} /> Camera:
+        </span>
+        <div className="blender-segmented-pill">
+          {cameraPresets.map((cam) => (
+            <button
+              key={cam.id}
+              className={`blender-tool-btn ${activeCameraPreset === cam.id ? "active" : ""}`}
+              onClick={() => onSelectCameraPreset(cam.id)}
+            >
+              <span>{cam.label}</span>
+            </button>
+          ))}
+          <button
+            className="blender-tool-btn reset-cam-btn"
+            onClick={() => onSelectCameraPreset("reset")}
+            title="Reset Camera to Home"
+          >
+            <RotateCcw size={10} />
+          </button>
+        </div>
+      </div>
+
+      <div className="blender-divider-v" />
+
+      {/* 4. Layer Visibility Popover */}
       <div className="blender-tool-group relative-wrap">
         <button
           className={`blender-menu-btn ${layersOpen ? "active" : ""}`}
@@ -145,7 +181,7 @@ export function BlenderViewportToolbar({
         )}
       </div>
 
-      {/* 4. Right Side: Compact Vital Badges HUD Strip */}
+      {/* 5. Right Side: Compact Vital Badges HUD Strip */}
       <div className="blender-vitals-strip">
         <div className="blender-vital-item">
           <span className="bvi-label">LVEF</span>

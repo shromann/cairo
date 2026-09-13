@@ -16,6 +16,8 @@ export const DEMO_PATIENTS = [
     riskLevel: "critical", // "critical" | "warning" | "stable"
     room: "Cardio-ICU Bed 4",
     attending: "Dr. Sarah Chen, MD",
+    assignedStudent: "Alex Rivera (MS4 Clinical Sub-I)",
+    assignedResident: "Dr. Maya Lin, MD (Cardiology Fellow)",
     recentVitals: { bp: "108/68", hr: "72 bpm", spo2: "96%", bnp: "1,240 pg/mL" },
     clinicalSummary:
       "68-year-old female post-anterior STEMI. Echocardiogram ordered for acute dyspnea on minimal exertion. Severely reduced LVEF with anterior/apical akinesis and elevated filling pressures.",
@@ -60,6 +62,8 @@ export const DEMO_PATIENTS = [
     riskLevel: "critical",
     room: "Telemetry Ward 3B",
     attending: "Dr. Sarah Chen, MD",
+    assignedStudent: "Emma Watson (MS3 Core Clerk)",
+    assignedResident: "Dr. James Wilson, MD (Internal Medicine PGY-2)",
     recentVitals: { bp: "138/82", hr: "68 bpm", spo2: "98%", bnp: "680 pg/mL" },
     clinicalSummary:
       "74-year-old male with progressive exertional syncope and systolic murmur. Pre-TAVR anatomical workup and ventricular hypertrophy assessment.",
@@ -91,6 +95,8 @@ export const DEMO_PATIENTS = [
     riskLevel: "warning",
     room: "Outpatient Cardiology",
     attending: "Dr. Sarah Chen, MD",
+    assignedStudent: "Lucas Chang (MS4 Cardiology Sub-I)",
+    assignedResident: "Dr. Anika Gupta, MD (Cardiology Fellow)",
     recentVitals: { bp: "124/76", hr: "64 bpm", spo2: "99%", bnp: "290 pg/mL" },
     clinicalSummary:
       "58-year-old male with hypertension on guideline-directed medical therapy. Routine 6-month surveillance echocardiogram to monitor ejection fraction recovery.",
@@ -122,6 +128,8 @@ export const DEMO_PATIENTS = [
     riskLevel: "stable",
     room: "Pre-Operative Clinic",
     attending: "Dr. Sarah Chen, MD",
+    assignedStudent: "Chloe Zhang (MS3 Clerk)",
+    assignedResident: "Dr. Marcus Reed, MD (Cardiology Fellow)",
     recentVitals: { bp: "116/72", hr: "62 bpm", spo2: "100%", bnp: "42 pg/mL" },
     clinicalSummary:
       "49-year-old female undergoing pre-operative cardiac clearance prior to elective orthopedic surgery. No personal or family history of heart disease.",
@@ -153,6 +161,8 @@ export const DEMO_PATIENTS = [
     riskLevel: "critical",
     room: "Cardiology Step-down 2A",
     attending: "Dr. Sarah Chen, MD",
+    assignedStudent: "Zachary Miller (MS4 Sub-I)",
+    assignedResident: "Dr. Elena Rostov, MD (Heart Failure Fellow)",
     recentVitals: { bp: "102/64", hr: "84 bpm", spo2: "95%", bnp: "1,850 pg/mL" },
     clinicalSummary:
       "63-year-old male with progressive biventricular dilation, 4-chamber enlargement, and moderate functional mitral regurgitation. Being evaluated for CRT-D device therapy.",
@@ -184,6 +194,8 @@ export const DEMO_PATIENTS = [
     riskLevel: "warning",
     room: "Outpatient Specialized Center",
     attending: "Dr. Sarah Chen, MD",
+    assignedStudent: "Hannah Lee (MS3 Clerk)",
+    assignedResident: "Dr. Maya Lin, MD (Cardiology Fellow)",
     recentVitals: { bp: "128/80", hr: "58 bpm", spo2: "99%", bnp: "410 pg/mL" },
     clinicalSummary:
       "52-year-old female with asymmetrical septal hypertrophy (IVSd 2.1cm) and dynamic LVOT obstruction. Monitoring response to mavacamten therapy.",
