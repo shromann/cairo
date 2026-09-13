@@ -4,7 +4,7 @@
 #
 # Usage:
 #   source ../env.sh
-#   bash infra/08-smoke-test.sh
+#   bash scripts/08-smoke-test.sh
 #
 # Deploys Google's hello container to cairo-web, verifies it returns HTML,
 # then sets up a budget alert.
@@ -78,7 +78,7 @@ verify_web() {
     rm -f ../env.sh.bak
   else
     echo "" >> ../env.sh
-    echo "# Populated by infra/08-smoke-test.sh" >> ../env.sh
+    echo "# Populated by scripts/08-smoke-test.sh" >> ../env.sh
     echo "export WEB_URL=\"${url}\"" >> ../env.sh
   fi
 }

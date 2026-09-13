@@ -4,7 +4,7 @@
 #
 # Usage:
 #   source ../env.sh
-#   bash infra/01-provision.sh
+#   bash scripts/01-provision.sh
 #
 # Idempotent: safe to re-run; existing resources are left unchanged.
 # =============================================================================
@@ -107,7 +107,7 @@ export_project_number() {
     rm -f ../env.sh.bak
   else
     echo "" >> ../env.sh
-    echo "# Populated by infra/01-provision.sh" >> ../env.sh
+    echo "# Populated by scripts/01-provision.sh" >> ../env.sh
     echo "export PROJECT_NUMBER=\"${PROJECT_NUMBER}\"" >> ../env.sh
   fi
   log "PROJECT_NUMBER written to env.sh."

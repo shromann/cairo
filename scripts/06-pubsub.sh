@@ -4,14 +4,14 @@
 #
 # Usage:
 #   source ../env.sh
-#   bash infra/06-pubsub.sh
+#   bash scripts/06-pubsub.sh
 #
 # Creates:
 #   video-jobs-dlq  — dead-letter topic for failed messages
 #   video-jobs      — main work queue (one message = 8 videos for GPU batching)
 #
 # The subscription that wires video-jobs -> cairo-worker is created in
-# infra/08-smoke-test.sh (needs the worker's Cloud Run URL).
+# scripts/08-smoke-test.sh (needs the worker's Cloud Run URL).
 #
 # Idempotent: creating an existing topic is a no-op.
 # =============================================================================
@@ -22,7 +22,7 @@ set -euo pipefail
 # Guards
 # ---------------------------------------------------------------------------
 : "${PROJECT_ID:?env.sh not sourced — run: source env.sh}"
-: "${PROJECT_NUMBER:?PROJECT_NUMBER missing — run infra/01-provision.sh first}"
+: "${PROJECT_NUMBER:?PROJECT_NUMBER missing — run scripts/01-provision.sh first}"
 : "${TOPIC:?TOPIC is required}"
 : "${DLQ:?DLQ is required}"
 
@@ -106,7 +106,7 @@ main() {
 
   log ""
   log "NOTE: The push subscription (${TOPIC} -> cairo-worker) is created in"
-  log "      infra/08-smoke-test.sh after the worker's Cloud Run URL is known."
+  log "      scripts/08-smoke-test.sh after the worker's Cloud Run URL is known."
   log "=== 06-pubsub.sh complete ==="
 }
 

@@ -4,7 +4,7 @@
 #
 # Usage:
 #   source ../env.sh
-#   bash infra/04-database.sh
+#   bash scripts/04-database.sh
 #
 # Run this first and move on — provisioning takes 5–10 minutes.
 # The script polls until the instance is RUNNABLE before enabling pooling.
@@ -145,7 +145,7 @@ export_connection_name() {
     rm -f ../env.sh.bak
   else
     echo "" >> ../env.sh
-    echo "# Populated by infra/04-database.sh" >> ../env.sh
+    echo "# Populated by scripts/04-database.sh" >> ../env.sh
     echo "export SQL_CONNECTION=\"${SQL_CONNECTION}\"" >> ../env.sh
   fi
   log "SQL_CONNECTION written to env.sh."
@@ -165,7 +165,7 @@ enable_connection_pooling() {
   else
     warn "Could not enable Managed Connection Pooling."
     warn "This usually means the instance uses the legacy Cloud SQL network architecture."
-    warn "Workaround: cap --max-instances=10 on the web service in infra/08-deploy.sh."
+    warn "Workaround: cap --max-instances=10 on the web service in scripts/08-smoke-test.sh."
     warn "Output: $(cat /tmp/mcp-output.txt)"
   fi
   rm -f /tmp/mcp-output.txt
@@ -202,7 +202,7 @@ main() {
   wait_for_runnable  # pooling patch restarts the instance
   verify
   log ""
-  log "Next step: run infra/05-secrets.sh to store DB_PASSWORD in Secret Manager."
+  log "Next step: run scripts/05-secrets.sh to store DB_PASSWORD in Secret Manager."
   log "  export DB_PASSWORD=\"${DB_PASSWORD}\" (already set in this shell)"
   log "=== 04-database.sh complete ==="
 }

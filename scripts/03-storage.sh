@@ -4,7 +4,7 @@
 #
 # Usage:
 #   source ../env.sh
-#   bash infra/03-storage.sh
+#   bash scripts/03-storage.sh
 #
 # Creates one bucket with two logical prefixes:
 #   uploads/   — AVI files uploaded directly by the browser via signed URL

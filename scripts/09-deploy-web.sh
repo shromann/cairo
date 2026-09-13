@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # =============================================================================
 # Cairo — Step 9: build the cairo-web image with Cloud Build and deploy to Cloud Run
-#   source env.sh && infra/09-deploy-web.sh            # build + deploy
-#   infra/09-deploy-web.sh --dry-run                    # print the commands only
+#   source env.sh && scripts/09-deploy-web.sh            # build + deploy
+#   scripts/09-deploy-web.sh --dry-run                    # print the commands only
 # Requires steps 01-07 (APIs, IAM, bucket, Cloud SQL, secret, artifact registry).
 # =============================================================================
 set -euo pipefail
-: "${PROJECT_ID:?env.sh not sourced}"; : "${REGION:?}"; : "${REPO:?}"; : "${SQL_CONNECTION:?run infra/04-database.sh}"
+: "${PROJECT_ID:?env.sh not sourced}"; : "${REGION:?}"; : "${REPO:?}"; : "${SQL_CONNECTION:?run scripts/04-database.sh}"
 : "${SQL_DB:=cairo}"; : "${SQL_USER:=cairo_app}"; : "${BUCKET_MEDIA:=${PROJECT_ID}-media}"
 SERVICE="${SERVICE:-cairo-web}"
 TAG="${TAG:-$(git -C "$(dirname "$0")/.." rev-parse --short HEAD 2>/dev/null || date +%Y%m%d%H%M)}"

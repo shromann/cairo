@@ -10,8 +10,8 @@
 #
 # Usage:
 #   source ../env.sh
-#   bash infra/10-cicd.sh               # full setup
-#   bash infra/10-cicd.sh --dry-run     # print commands only
+#   bash scripts/10-cicd.sh               # full setup
+#   bash scripts/10-cicd.sh --dry-run     # print commands only
 #
 # Requires:
 #   - All previous infra steps completed (01-09).
@@ -32,7 +32,7 @@ set -euo pipefail
 : "${PROJECT_ID:?env.sh not sourced — run: source env.sh}"
 : "${REGION:?REGION is required}"
 : "${REPO:?REPO is required}"
-: "${SQL_CONNECTION:?SQL_CONNECTION missing — run infra/04-database.sh first}"
+: "${SQL_CONNECTION:?SQL_CONNECTION missing — run scripts/04-database.sh first}"
 : "${BUCKET_MEDIA:?BUCKET_MEDIA is required}"
 : "${TOPIC:?TOPIC is required}"
 : "${DLQ:?DLQ is required}"
@@ -88,7 +88,7 @@ write_cloudbuild_yaml() {
   cat > "$yaml" <<EOF
 # =============================================================================
 # Cairo — Cloud Build pipeline
-# Triggered on push to '${TRIGGER_BRANCH}' by infra/10-cicd.sh.
+# Triggered on push to '${TRIGGER_BRANCH}' by scripts/10-cicd.sh.
 #
 # Steps:
 #   1. Build the multi-stage image (frontend + backend + PanEcho weights).

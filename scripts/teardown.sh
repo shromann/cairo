@@ -4,7 +4,7 @@
 #
 # Usage:
 #   source ../env.sh
-#   bash infra/teardown.sh
+#   bash scripts/teardown.sh
 #
 # WARNING: This is IRREVERSIBLE. It deletes the entire GCP project including
 # all Cloud SQL data, GCS objects, secrets, and container images.

@@ -4,7 +4,7 @@
 #
 # Usage:
 #   source ../env.sh
-#   bash infra/07-artifact-registry.sh
+#   bash scripts/07-artifact-registry.sh
 #
 # Creates a Docker repository in Artifact Registry and grants the Cloud Build
 # service account the rights it needs to push images and act as the web/worker
@@ -19,7 +19,7 @@ set -euo pipefail
 # Guards
 # ---------------------------------------------------------------------------
 : "${PROJECT_ID:?env.sh not sourced — run: source env.sh}"
-: "${PROJECT_NUMBER:?PROJECT_NUMBER missing — run infra/01-provision.sh first}"
+: "${PROJECT_NUMBER:?PROJECT_NUMBER missing — run scripts/01-provision.sh first}"
 : "${REGION:?REGION is required}"
 : "${REPO:?REPO is required}"
 : "${SA_WEB:?SA_WEB not set}"
@@ -58,7 +58,8 @@ bind_build_roles() {
   for role in \
     roles/artifactregistry.writer \
     roles/storage.admin \
-    roles/logging.logWriter
+    roles/logging.logWriter \
+    roles/run.admin              # required to deploy Cloud Run services from Cloud Build
   do
     log "  ${role}"
     gcloud projects add-iam-policy-binding "$PROJECT_ID" \
@@ -104,7 +105,7 @@ print_registry_url() {
     rm -f ../env.sh.bak
   else
     echo "" >> ../env.sh
-    echo "# Populated by infra/07-artifact-registry.sh" >> ../env.sh
+    echo "# Populated by scripts/07-artifact-registry.sh" >> ../env.sh
     echo "export REGISTRY=\"${registry_url}\"" >> ../env.sh
   fi
   log "REGISTRY written to env.sh."

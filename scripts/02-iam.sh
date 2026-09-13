@@ -4,7 +4,7 @@
 #
 # Usage:
 #   source ../env.sh
-#   bash infra/02-iam.sh
+#   bash scripts/02-iam.sh
 #
 # Idempotent: creating an already-existing SA or binding is a no-op.
 # =============================================================================
@@ -15,7 +15,7 @@ set -euo pipefail
 # Guards
 # ---------------------------------------------------------------------------
 : "${PROJECT_ID:?env.sh not sourced — run: source env.sh}"
-: "${PROJECT_NUMBER:?PROJECT_NUMBER missing — run infra/01-provision.sh first}"
+: "${PROJECT_NUMBER:?PROJECT_NUMBER missing — run scripts/01-provision.sh first}"
 : "${SA_WEB:?SA_WEB not set}"
 : "${SA_WORKER:?SA_WORKER not set}"
 : "${SA_INVOKER:?SA_INVOKER not set}"
@@ -111,7 +111,7 @@ bind_web_roles() {
 #   cloudsql.client           — write predictions to Cloud SQL
 #   secretmanager.secretAccessor — read DB password at startup
 #
-# Storage access is granted at bucket level in infra/03-storage.sh.
+# Storage access is granted at bucket level in scripts/03-storage.sh.
 # ---------------------------------------------------------------------------
 bind_worker_roles() {
   log "--- Binding roles for cairo-worker ---"

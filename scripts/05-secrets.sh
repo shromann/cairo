@@ -4,7 +4,7 @@
 #
 # Usage:
 #   source ../env.sh          # ensure DB_PASSWORD is set from step 04
-#   bash infra/05-secrets.sh
+#   bash scripts/05-secrets.sh
 #
 # Stores the database password as a Secret Manager secret.
 # Both cairo-web and cairo-worker already hold secretAccessor from 02-iam.sh.
@@ -18,7 +18,7 @@ set -euo pipefail
 # Guards
 # ---------------------------------------------------------------------------
 : "${PROJECT_ID:?env.sh not sourced — run: source env.sh}"
-: "${DB_PASSWORD:?DB_PASSWORD not set — run infra/04-database.sh first}"
+: "${DB_PASSWORD:?DB_PASSWORD not set — run scripts/04-database.sh first}"
 
 log() { echo "[05-secrets] $*"; }
 die() { echo "[05-secrets] ERROR: $*" >&2; exit 1; }
