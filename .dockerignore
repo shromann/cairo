@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+env.sh
+frontend/node_modules
+frontend/dist
+frontend/.astro
+tools/heart-asset/.cache
+tools/heart-asset/node_modules
+docs
+**/__pycache__
+*.pyc
+.venv

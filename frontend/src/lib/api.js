@@ -1,7 +1,9 @@
 /**
  * Backend API client. Base URL from PUBLIC_API_URL (Astro exposes PUBLIC_* env vars), default local uvicorn.
  */
-export const API_BASE = (import.meta.env.PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
+// PUBLIC_API_URL unset -> local dev server; set to "" (production container) -> same-origin relative URLs.
+const _raw = import.meta.env.PUBLIC_API_URL;
+export const API_BASE = (_raw === undefined ? "http://localhost:8000" : _raw).replace(/\/$/, "");
 
 async function request(path, init) {
   const res = await fetch(`${API_BASE}${path}`, init);

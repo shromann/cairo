@@ -3,7 +3,7 @@ cairo.backend.ingest
 ~~~~~~~~~~~~~~~~~~~~
 Load EchoNet-Dynamic into the Cairo schema for local development and evaluation.
 
-    python -m cairo.backend.ingest --data-dir /path/to/EchoNet-Dynamic [--split TEST] [--limit N]
+    python -m cairo.backend.ingest --data-dir /path/to/EchoNet-Dynamic [--split TEST] [--limit N] [--gcs-prefix gs://bucket/prefix]
 
 EchoNet has no patient/study structure, so each clip becomes one synthetic patient
 (mrn ``SYNTH-<clip>``), one study (acc_num = clip name) and one video (video_num 1,
@@ -28,7 +28,7 @@ LABEL_COLS = {"EF": "EF", "LVEDV": "EDV", "LVESV": "ESV"}
 LABEL_SOURCE = "EchoNet-Dynamic FileList.csv"
 
 
-def ingest_echonet(data_dir: str, split: str | None = None, limit: int = 0) -> None:
+def ingest_echonet(data_dir: str, split: str | None = None, limit: int = 0, gcs_prefix: str | None = None) -> None:
     with open(os.path.join(data_dir, "FileList.csv"), newline="") as f:
         rows = [r for r in csv.DictReader(f) if not split or r["Split"] == split.upper()]
     if limit:
@@ -57,7 +57,8 @@ def ingest_echonet(data_dir: str, split: str | None = None, limit: int = 0) -> N
             .values([{
                 "study_id": sid[r["FileName"]],
                 "video_num": 1,
-                "gcs_uri": "file://" + os.path.join(data_dir, "Videos", r["FileName"] + ".avi"),
+                "gcs_uri": (gcs_prefix.rstrip("/") + "/" + r["FileName"] + ".avi") if gcs_prefix
+                           else "file://" + os.path.join(data_dir, "Videos", r["FileName"] + ".avi"),
                 "view": "A4C",
                 "doppler": False,
                 "frame_count": int(r["NumberOfFrames"]),
@@ -85,8 +86,9 @@ def main() -> None:
     ap.add_argument("--data-dir", default=os.environ.get("ECHONET_DIR"), required="ECHONET_DIR" not in os.environ)
     ap.add_argument("--split", default=None, help="TRAIN / VAL / TEST (default: all)")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--gcs-prefix", default=None, help="e.g. gs://cairo-hack-media/uploads/echonet -> rows use gs:// URIs")
     a = ap.parse_args()
-    ingest_echonet(a.data_dir, a.split, a.limit)
+    ingest_echonet(a.data_dir, a.split, a.limit, a.gcs_prefix)
 
 
 if __name__ == "__main__":

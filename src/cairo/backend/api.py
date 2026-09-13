@@ -30,6 +30,7 @@ import sqlalchemy
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session, selectinload
 
 from cairo.backend import repositories as repo
@@ -37,14 +38,17 @@ from cairo.backend.db import get_session
 from cairo.backend.models import Patient, Study, Video, VideoLabel, VideoPrediction, VideoStatus
 
 app = FastAPI(title="cairo", version="0.1.0")
+# Dev: the Astro dev server on :4321 calls the API cross-origin. Prod: same origin (frontend served below).
+_extra_origins = [o for o in os.environ.get("CAIRO_CORS_ORIGINS", "").split(",") if o]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4321", "http://127.0.0.1:4321"],
+    allow_origins=["http://localhost:4321", "http://127.0.0.1:4321", *_extra_origins],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 MP4_CACHE = Path(os.environ.get("CAIRO_MP4_CACHE", Path.home() / ".cache" / "cairo" / "mp4"))
+GCS_CACHE = MP4_CACHE / "src"
 
 
 # ---------------------------------------------------------------------------
@@ -220,8 +224,16 @@ def stream_video(video_id: uuid.UUID, session: Session = Depends(get_session)) -
     if v is None:
         raise HTTPException(404, "video not found")
     src = _local_path(v.gcs_uri)
+    if src is None and v.gcs_uri.startswith("gs://"):
+        # download once into the instance's cache (Cloud Run: /tmp), then transcode like a local file
+        from google.cloud import storage
+        bucket, blob = v.gcs_uri[5:].split("/", 1)
+        GCS_CACHE.mkdir(parents=True, exist_ok=True)
+        src = str(GCS_CACHE / (hashlib.sha1(v.gcs_uri.encode()).hexdigest() + os.path.splitext(blob)[1]))
+        if not os.path.exists(src):
+            storage.Client().bucket(bucket).blob(blob).download_to_filename(src)
     if src is None:
-        raise HTTPException(501, "streaming gs:// videos is not implemented locally; use a signed URL in prod")
+        raise HTTPException(501, f"unsupported video uri scheme: {v.gcs_uri}")
     if not os.path.exists(src):
         raise HTTPException(404, f"file missing: {src}")
     MP4_CACHE.mkdir(parents=True, exist_ok=True)
@@ -230,3 +242,11 @@ def stream_video(video_id: uuid.UUID, session: Session = Depends(get_session)) -
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", src, "-c:v", "libx264", "-pix_fmt", "yuv420p",
                         "-preset", "veryfast", "-crf", "23", "-movflags", "+faststart", str(out)], check=True)
     return FileResponse(str(out), media_type="video/mp4")
+
+
+# ---------------------------------------------------------------------------
+# built frontend (production container): everything not under /api is the Astro site
+# ---------------------------------------------------------------------------
+_static = os.environ.get("CAIRO_STATIC_DIR")
+if _static and os.path.isdir(_static):
+    app.mount("/", StaticFiles(directory=_static, html=True), name="frontend")
