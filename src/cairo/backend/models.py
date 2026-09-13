@@ -1,7 +1,7 @@
 """
 cairo.backend.models
 ~~~~~~~~~~~~~~~~~~~~
-SQLAlchemy ORM models mirroring the database schema defined in infra/schema.sql.
+SQLAlchemy ORM models mirroring the database schema defined in src/cairo/backend/sql/schema.sql.
 
 Design notes
 ------------

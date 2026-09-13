@@ -5,7 +5,7 @@ Revises:
 Create Date: 2026-09-12
 
 This migration is the authoritative source for the database schema.
-It mirrors infra/schema.sql exactly.  Do NOT edit schema.sql and forget
+It mirrors src/cairo/backend/sql/schema.sql exactly.  Do NOT edit schema.sql and forget
 to update this file — they must stay in sync.
 
 To apply:

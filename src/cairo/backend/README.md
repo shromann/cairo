@@ -10,7 +10,7 @@
 | `infer.py` | PanEcho inference; `predict_video()` returns `PredictionRow`s, CLI writes them via repositories |
 | `metrics.py` | score predictions against labels; class distributions for every head |
 
-Migrations: `alembic/versions/0001` (six tables, mirrors `infra/schema.sql`), `0002` (`video_labels`).
+Migrations: `alembic/versions/0001` (six tables, mirrors `src/cairo/backend/sql/schema.sql`), `0002` (`video_labels`).
 
 ## Local run
 ```

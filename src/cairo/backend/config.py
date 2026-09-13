@@ -5,7 +5,7 @@ Centralised application settings loaded from environment variables.
 
 All secrets arrive via environment variables — never hardcoded.
 In Cloud Run, Secret Manager secrets are projected as env vars by the
-service configuration (see infra/06-deploy.sh).
+service configuration (see scripts/09-deploy-web.sh).
 
 Local development:
   Copy .env.example -> .env and fill in the values.
@@ -65,7 +65,7 @@ class Settings(BaseSettings):
         default=None,
         description=(
             "Cloud SQL connection name: PROJECT:REGION:INSTANCE. "
-            "Set by infra/04-database.sh and stored in env.sh as SQL_CONNECTION."
+            "Set by scripts/04-database.sh and stored in env.sh as SQL_CONNECTION."
         ),
         alias="SQL_CONNECTION",
     )
@@ -174,7 +174,7 @@ class Settings(BaseSettings):
             if not self.sql_connection_name:
                 raise ValueError(
                     "SQL_CONNECTION must be set in staging/production environments. "
-                    "Run infra/04-database.sh and source env.sh."
+                    "Run scripts/04-database.sh and source env.sh."
                 )
         return self
 

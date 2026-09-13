@@ -28,7 +28,7 @@ RUN uv pip install --index-strategy unsafe-best-match \
       torch torchvision \
     && uv pip install -e .
 COPY alembic.ini ./
-COPY alembic ./alembic
+# alembic migrations live inside src/cairo/backend/alembic/ — already copied above via COPY src ./src
 # Bake PanEcho weights + ConvNeXt backbone into the image so cold starts don't hit GitHub.
 RUN python -c "import torch; torch.hub.load('CarDS-Yale/PanEcho', 'PanEcho', tasks='all', trust_repo=True, verbose=False); print('PanEcho cached')"
 COPY --from=frontend /app/frontend/dist ./frontend/dist
