@@ -11,11 +11,11 @@ to update this file — they must stay in sync.
 To apply:
     # Local Docker:
     export DATABASE_URL=postgresql+pg8000://cairo_app:dev@localhost:5432/cairo
-    alembic upgrade head
+    uv run alembic -c src/cairo/backend/alembic.ini upgrade head
 
     # Cloud SQL:
     source env.sh
-    alembic upgrade head
+    uv run alembic -c src/cairo/backend/alembic.ini upgrade head
 """
 
 from __future__ import annotations

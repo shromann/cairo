@@ -2,10 +2,10 @@
 Alembic migration environment.
 
 Wired to Cairo's SQLAlchemy engine and ORM metadata so that:
-  - ``alembic upgrade head``  runs migrations against Cloud SQL or a local DB.
-  - ``alembic revision --autogenerate``  diffs models.py against the live schema.
+  - ``uv run alembic -c src/cairo/backend/alembic.ini upgrade head`` runs migrations against Cloud SQL or a local DB.
+  - ``uv run alembic -c src/cairo/backend/alembic.ini revision --autogenerate`` diffs domain/models.py against the live schema.
 
-Connection mode is determined by the same logic as db.py:
+Connection mode is determined by the same logic as core/db.py:
   - DATABASE_URL set  →  direct SQLAlchemy URL (local Docker dev)
   - DATABASE_URL unset  →  Cloud SQL connector (staging / production)
 
@@ -13,11 +13,11 @@ Usage
 -----
 Local:
   export DATABASE_URL=postgresql+pg8000://cairo_app:dev@localhost:5432/cairo
-  alembic upgrade head
+  uv run alembic -c src/cairo/backend/alembic.ini upgrade head
 
 Cloud SQL (from a machine with gcloud auth):
   source env.sh
-  alembic upgrade head
+  uv run alembic -c src/cairo/backend/alembic.ini upgrade head
 """
 
 from __future__ import annotations
@@ -29,8 +29,8 @@ from alembic import context
 from sqlalchemy import pool
 
 # Import Cairo's engine and metadata
-from cairo.backend.db import engine
-from cairo.backend.models import Base  # noqa: F401 — imports all models into metadata
+from cairo.backend.core.db import engine
+from cairo.backend.domain.models import Base  # noqa: F401 — imports all models into metadata
 
 # ---------------------------------------------------------------------------
 # Alembic config object
@@ -58,11 +58,11 @@ def run_migrations_offline() -> None:
     or for environments where a direct DB connection is not available.
 
     Usage:
-        alembic upgrade head --sql
+        uv run alembic -c src/cairo/backend/alembic.ini upgrade head --sql
     """
     # In offline mode we need a URL; fall back to the alembic.ini value
     # if DATABASE_URL is not set.
-    from cairo.backend.config import settings
+    from cairo.backend.core.config import settings
 
     url = settings.database_url or config.get_main_option("sqlalchemy.url")
 
