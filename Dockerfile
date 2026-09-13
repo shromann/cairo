@@ -5,9 +5,9 @@
 # ---- stage 1: frontend ------------------------------------------------------------------------
 FROM node:22-slim AS frontend
 WORKDIR /app/frontend
-COPY frontend/package.json frontend/package-lock.json ./
+COPY src/cairo/frontend/package.json src/cairo/frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
-COPY frontend/ ./
+COPY src/cairo/frontend/ ./
 # API is same-origin in the container; GLB heart on.
 ENV PUBLIC_API_URL="" PUBLIC_HEART_RENDERER=glb ASTRO_TELEMETRY_DISABLED=1
 RUN npm run build
