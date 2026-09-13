@@ -28,7 +28,7 @@ die()  { echo "[01-provision] ERROR: $*" >&2; exit 1; }
 # ---------------------------------------------------------------------------
 check_gcloud_version() {
   local installed
-  installed=$(gcloud version --format='value(Google Cloud SDK)' 2>/dev/null | head -1)
+  installed=$(gcloud version --format='value("Google Cloud SDK")' 2>/dev/null | head -1)
   log "gcloud version: ${installed}"
 
   # Simple semver comparison: fail if installed < required

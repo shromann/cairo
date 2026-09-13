@@ -46,6 +46,7 @@ create_instance() {
   log "Creating Cloud SQL instance '${SQL_INSTANCE}' (this may take 5–10 min)..."
   gcloud sql instances create "$SQL_INSTANCE" \
     --database-version=POSTGRES_16 \
+    --edition=ENTERPRISE \
     --tier=db-g1-small \
     --region="$REGION" \
     --storage-size=10GB \
