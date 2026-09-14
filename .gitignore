@@ -45,3 +45,8 @@ frontend/dist/
 tools/heart-asset/.cache/
 tools/heart-asset/node_modules/
 .deploy-image
+
+# refactored frontend location
+src/cairo/frontend/node_modules/
+src/cairo/frontend/.astro/
+src/cairo/frontend/dist/
