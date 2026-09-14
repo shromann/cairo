@@ -1,0 +1,15 @@
+.git
+.env
+.env.*
+env.sh
+.deploy-image
+docs
+# refactored frontend location
+src/cairo/frontend/node_modules
+src/cairo/frontend/dist
+src/cairo/frontend/.astro
+tools/heart-asset/.cache
+tools/heart-asset/node_modules
+**/__pycache__
+*.pyc
+.venv
