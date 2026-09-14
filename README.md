@@ -508,6 +508,4 @@ If you use Cairo in research, please cite:
 
 ---
 
-## Preliminary Round · 80 Points
-
-Scored from: Public Codebase · Production URL · 3–5 Minute Demo Video
+[Public Codebase](https://github.com/shromann/cairo/tree/main) · [Production URL](https://cairo-web-964739815885.asia-southeast1.run.app/) · [3–5 Minute Demo Video](https://youtu.be/1Ryanly4SNo?si=iOK1puGsSHfi2yL3)
