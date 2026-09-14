@@ -2,12 +2,14 @@
 .env
 .env.*
 env.sh
-frontend/node_modules
-frontend/dist
-frontend/.astro
+.deploy-image
+docs
+# refactored frontend location
+src/cairo/frontend/node_modules
+src/cairo/frontend/dist
+src/cairo/frontend/.astro
 tools/heart-asset/.cache
 tools/heart-asset/node_modules
-docs
 **/__pycache__
 *.pyc
 .venv
