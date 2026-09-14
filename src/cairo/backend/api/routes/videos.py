@@ -16,7 +16,7 @@ from cairo.backend.domain.models import Video
 router = APIRouter(tags=["videos"])
 
 
-@router.get("/api/videos/{video_id}/stream")
+@router.api_route("/api/videos/{video_id}/stream", methods=["GET", "HEAD"])
 def stream_video(video_id: uuid.UUID, session: Session = Depends(get_session)) -> FileResponse:
     video = session.get(Video, video_id)
     if video is None:
