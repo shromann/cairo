@@ -467,14 +467,6 @@ The following sources support the market framing and should be re-checked as par
 
 ---
 
-## Contact & Support
-
-- **Technical Issues:** Open GitHub issue
-- **Clinical Questions:** Email: contact@cairo.ai (coming soon)
-- **Hospital Deployment:** Contact us to discuss pilot partnerships
-
----
-
 ## Citation
 
 If you use Cairo in research, please cite:
