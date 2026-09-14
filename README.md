@@ -355,6 +355,15 @@ Apache License 2.0 — See [`LICENSE`](LICENSE) file.
 
 ---
 
+## Contributors
+
+| Role | GitHub |
+|------|--------|
+| Backend / Infra | [@GVivek-7](https://github.com/GVivek-7) |
+| Lead / Model | [@shromann](https://github.com/shromann) |
+
+---
+
 ## Contact & Support
 
 - **Technical Issues:** Open GitHub issue
@@ -369,7 +378,7 @@ If you use Cairo in research, please cite:
 
 ```bibtex
 @software{cairo2026,
-  author = {Majumder, Shromann},
+  author = {Majumder, Shromann and Vivek, G},
   title = {Cairo: Open-Source AI for Echocardiography Measurement},
   year = {2026},
   url = {https://github.com/shromann/cairo}
