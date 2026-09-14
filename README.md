@@ -1,4 +1,4 @@
-![banner](https://github.com/shromann/cairo/blob/main/.github/assets/banner.jpg)
+![banner](https://github.com/shromann/cairo/blob/main/.github/assets/banner.gif)
 # Cairo: Turning Every Echocardiogram Into a Faster, Clearer Clinical Decision
 
 > **Automate echo measurement in 2 minutes. Enable rural clinics to screen 100 patients/week without specialist oversight.**
