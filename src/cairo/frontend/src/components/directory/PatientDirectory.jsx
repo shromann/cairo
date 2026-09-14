@@ -17,7 +17,7 @@ import {
   FileText,
   Play
 } from "lucide-react";
-import { DEMO_PATIENTS } from "../../data/patientData";
+import { DEMO_PATIENTS, matchPatientForStudy } from "../../data/patientData";
 
 /**
  * Doctor's Clinical Patient & Study Directory
@@ -55,10 +55,26 @@ export function PatientDirectory({
     setExpandedPatientIds(new Set());
   };
 
-  // Merge demo patient registry with any dynamic cohort records from the API
+  // Build the directory from the studies that actually exist in the database, so every row opens a
+  // study the API can resolve (and therefore a clip that streams). DEMO_PATIENTS is only a fallback
+  // for when the API is unreachable, otherwise its hardcoded study IDs 404 and the viewer comes up empty.
   const patients = useMemo(() => {
-    return DEMO_PATIENTS;
-  }, []);
+    if (!cohort || cohort.length === 0) return DEMO_PATIENTS;
+    const byId = new Map();
+    for (const row of cohort) {
+      const patient = matchPatientForStudy(row.id, cohort);
+      if (!patient) continue;
+      const existing = byId.get(patient.id);
+      if (existing) {
+        // same synthetic patient matched by two studies -> keep both studies under one row
+        const seen = new Set(existing.studies.map((st) => st.id));
+        existing.studies = [...existing.studies, ...patient.studies.filter((st) => !seen.has(st.id))];
+      } else {
+        byId.set(patient.id, { ...patient, studies: [...patient.studies] });
+      }
+    }
+    return [...byId.values()];
+  }, [cohort]);
 
   const filteredPatients = useMemo(() => {
     return patients.filter((patient) => {
