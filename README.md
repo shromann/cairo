@@ -459,7 +459,7 @@ The following sources support the market framing and should be re-checked as par
 
 | Role | GitHub |
 |------|--------|
-| Frontend | [[@LucidMach](https://github.com/LucidMach) |
+| Frontend | [@LucidMach](https://github.com/LucidMach) |
 | Backend / Infra | [@GVivek-7](https://github.com/GVivek-7) |
 | Backend / Infra | [@vaibhav-reddy-a](https://github.com/vaibhav-reddy-a) |
 | Backend / Infra | [@hariharas-wq](https://github.com/hariharas-wq) |
