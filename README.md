@@ -87,6 +87,8 @@ The clinician remains responsible for:
 
 The product should be sold as a vendor-neutral software layer that connects to existing ultrasound, DICOM/PACS, reporting and electronic medical record workflows. Providers should not need to replace their ultrasound fleet to obtain value from Cairo.
 
+<iframe src="https://example.com" width="100%" height="500px"></iframe>
+
 ---
 
 ## Why now: the Australian market
