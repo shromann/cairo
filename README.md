@@ -1,3 +1,4 @@
+![banner](https://github.com/shromann/cairo/blob/main/.github/assets/banner.jpg)
 # Cairo: AI for Echocardiography Measurement & Diagnosis
 
 > **Automate echo measurement in 2 minutes. Enable rural clinics to screen 100 patients/week without specialist oversight.**
