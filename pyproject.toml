@@ -60,7 +60,10 @@ dev = [
 ]
 
 [project.scripts]
-cairo = "cairo.cli:app"
+# CLI entrypoint — start the API server directly
+# Usage: cairo serve
+# Note: cairo.cli module is not yet implemented; wire up when CLI is built.
+# cairo = "cairo.cli:app"
 
 [build-system]
 requires = ["hatchling"]
